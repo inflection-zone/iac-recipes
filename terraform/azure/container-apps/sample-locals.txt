@@ -1,0 +1,98 @@
+locals {
+  # subscription id
+  subscription-id = ""
+
+  # resource group properties
+  resource-group-properties = {
+    rg-location = "Central India"
+    rg-name     = "container-apps-resource-group"
+  }
+
+  # virtual network properties
+  virtual-network-properties = {
+    vnet-name = "container-apps-vnet"
+    vnet-address-space = [
+      "10.1.0.0/16"
+    ]
+    vnet-public-subnet-name = "container-apps-vnet-public-subnet"
+    vnet-public-subnet-address-prefixes = [
+      "10.1.0.0/23"
+    ]
+  }
+  vnet-id               = module.virtual-network.vnet-id
+  vnet-name             = module.virtual-network.vnet-name
+  vnet-public-subnet-id = module.virtual-network.vnet-public-subnet-id
+
+  # acr properties
+  acr-properties = {
+    acr-name                          = "containerappsacr"
+    acr-sku                           = "Basic"
+    acr-admin-enabled                 = true
+    acr-public-network-access-enabled = true
+  }
+  acr-id             = module.acr.acr-id
+  acr-name           = module.acr.acr-name
+  acr-admin-username = module.acr.acr-admin-username
+  acr-admin-password = module.acr.acr-admin-password
+
+  acr-server         = module.acr.acr-login-server
+  acr-repository-url = ""
+
+  dockerhub-server         = "docker.io"
+  dockerhub-repository-url = ""
+
+  # mysql flexible properties
+  mysql-flexible-properties = {
+    vnet-mysql-flexible-subnet-name = "container-apps-vnet-mysql-flexible-subnet"
+    vnet-mysql-flexible-subnet-address-prefixes = [
+      "10.1.101.0/24"
+    ]
+
+    vnet-mysql-flexible-dns-zone-name                      = "container-apps-vnet-mysql-flexible-dns-zone.mysql.database.azure.com"
+    vnet-mysql-flexible-dns-zone-virtual-network-link-name = "container-apps-vnet-mysql-flexible-dns-zone-virtual-network-link.com"
+
+    mysql-flexible-server-name            = "container-apps-mysql-flexible-server"
+    mysql-flexible-administrator-login    = ""
+    mysql-flexible-administrator-password = ""
+    mysql-flexible-version                = "8.0.21"
+    mysql-flexible-sku-name               = "B_Standard_B1ms"
+
+    mysql-flexible-server-read-replica-name = "container-apps-mysql-flexible-server-read-replica"
+  }
+
+  # storage account properties
+  storage-properties = {
+    sa-name                          = "storageaccount"
+    sa-tier                          = "Standard"
+    sa-kind                          = "StorageV2"
+    sa-replication-type              = "LRS"
+    sa-access-tier                   = "Hot"
+    sa-https-traffic-only-enabled    = true
+    sa-public-network-access-enabled = true
+    sa-network-rules-default-action  = "Allow"
+
+    sc-name = "container-apps-storage-container"
+
+    sb-object-name        = "env-file"
+    sb-object-type        = "Block"
+    sb-object-source-path = "../../../compose/.env"
+  }
+
+  # container app properties
+  container-app-properties = {
+    ca-acr-scope-map-pull-repo-name = "_repositories_pull"
+    ca-acr-pull-token-name          = "container-apps-acr-pull-token"
+
+    ca-user-assigned-identity-name = "container-apps-user-assigned-identity"
+
+    ca-log-analytics-workspace-name = "container-apps-log-analytics-workspace"
+    ca-environment-name             = "container-apps-environment"
+
+    ca-name = "container-apps"
+    # ca-registry-server  = "${local.dockerhub-server}"
+    ca-registry-server = "${local.acr-server}"
+    container-name     = "app-service"
+    # container-image-name = "${local.dockerhub-repository-url}"
+    container-image-name = "${local.acr-server}/${local.acr-repository-url}"
+  }
+}
