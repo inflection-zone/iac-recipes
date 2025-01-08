@@ -39,7 +39,7 @@ resource "aws_s3_object" "env-file" {
   bucket = local.s3-bucket-id
   key    = local.s3-properties.s3-object-key
   source = local.s3-properties.s3-object-source-path
-  etag   = filemd5(local.s3-properties.s3-object-source-path)  
+  etag   = filemd5(local.s3-properties.s3-object-source-path)
 }
 
 module "load-balancer" {

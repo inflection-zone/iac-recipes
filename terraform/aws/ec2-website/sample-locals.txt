@@ -1,0 +1,164 @@
+locals {
+
+  aws-region = "ap-south-1"
+
+  # vpc properties
+  vpc-properties = {
+    availability-zones = [
+      "${local.aws-region}a",
+      "${local.aws-region}b",
+      "${local.aws-region}c"
+    ]
+    vpc-cidr-block = "10.0.0.0/16"
+    vpc-subnet-count = {
+      "public"  = 1,
+      "private" = 0
+    }
+    vpc-public-subnet-cidr-blocks = [
+      "10.0.5.0/24",
+      "10.0.6.0/24",
+      "10.0.7.0/24",
+      "10.0.8.0/24"
+    ]
+    vpc-private-subnet-cidr-blocks = [
+      "10.0.101.0/24",
+      "10.0.102.0/24",
+      "10.0.103.0/24",
+      "10.0.104.0/24"
+    ]
+
+    vpc-tag-value                = "vpc"
+    vpc-public-subnet-tag-value  = "public-vpc"
+    vpc-private-subnet-tag-value = "private-vpc"
+    vpc-igw-tag-value            = "igw"
+  }
+
+  vpc-id              = module.vpc.vpc-id
+  vpc-public-subnets  = module.vpc.vpc-public-subnets
+  vpc-private-subnets = module.vpc.vpc-private-subnets
+
+  # ec2 properties
+  ec2-properties = {
+    ec2-instance-ami-value = ["al2023-ami-2023.6.20241212.0-kernel-6.1-x86_64"]
+    ec2-instance-owners    = ["137112412989"]
+
+    ec2-instance-sg-ingress-ssh-cidr-blocks = "0.0.0.0/0"
+    ec2-instance-sg-ingress-ssh-from-port   = 22
+    ec2-instance-sg-ingress-ssh-protocol    = "tcp"
+    ec2-instance-sg-ingress-ssh-to-port     = 22
+
+    ec2-instance-sg-ingress-http-cidr-blocks = "0.0.0.0/0"
+    ec2-instance-sg-ingress-http-from-port   = 80
+    ec2-instance-sg-ingress-http-protocol    = "tcp"
+    ec2-instance-sg-ingress-http-to-port     = 80
+
+    ec2-instance-sg-ingress-https-cidr-blocks = "0.0.0.0/0"
+    ec2-instance-sg-ingress-https-from-port   = 443
+    ec2-instance-sg-ingress-https-protocol    = "tcp"
+    ec2-instance-sg-ingress-https-to-port     = 443
+
+    ec2-instance-sg-egress-ipv4-cidr-blocks = "0.0.0.0/0"
+    ec2-instance-sg-egress-ipv4-protocol    = "-1"
+
+    ec2-instance-sg-egress-ipv6-cidr-blocks = "::/0"
+    ec2-instance-sg-egress-ipv6-protocol    = "-1"
+
+    ec2-instance-sg-tag-value = "sg"
+
+    ec2-instance-key-pair-name = "server-key"
+    ec2-instance-public-key    = "~/desktop/aws/ssh-keys/server-key.pub"
+
+    ec2-instance-type                        = "t2.micro"
+    ec2-instance-user-data                   = "../../aws/linux-user-data.tpl"
+    ec2-instance-associate-public-ip-address = true
+    ec2-instance-tag-value                   = "server"
+  }
+
+  # ec2-instance-id = module.ec2.ec2-instance-id
+
+  # # eip properties
+  # eip-properties = {
+  #   eip-instance-id = "${local.ec2-instance-id}"
+  #   eip-domain      = "vpc"
+  # }
+
+  # eip = module.eip.eip
+
+  # # acm properties
+  # acm-properties = {
+  #   acm-certificate-domain-name                      = "*.example.com"
+  #   acm-certificate-subject-alternative-domain-names = ["dev.example.com"]
+  #   acm-certificate-validation-method                = "DNS"
+  # }
+
+  # # route53 properties
+  # route53-zone-properties = {
+  #   route53-apex-zone-count = 1
+  #   route53-apex-zone-name  = "example.com"
+
+  #   route53-dev-zone-count = 0
+  #   route53-dev-zone-name  = "dev.example.com"
+  # }
+
+  # acm-certificate-arn  = module.acm-route53.acm-certificate-arn
+  # route53-apex-zone-id = module.acm-route53.route53-apex-zone-id
+  # route53-dev-zone-id  = module.acm-route53.route53-apex-zone-id
+
+  # # load balancer properties
+  # load-balancer-properties = {
+
+  #   load-balancer-sg-ingress-from-port   = 443
+  #   load-balancer-sg-ingress-to-port     = 443
+  #   load-balancer-sg-ingress-protocol    = "tcp"
+  #   load-balancer-sg-ingress-cidr-blocks = ["0.0.0.0/0"]
+
+  #   load-balancer-sg-egress-from-port   = 0
+  #   load-balancer-sg-egress-to-port     = 0
+  #   load-balancer-sg-egress-protocol    = -1
+  #   load-balancer-sg-egress-cidr-blocks = ["0.0.0.0/0"]
+
+  #   load-balancer-sg-tag-value = "load-balancer-sg"
+
+  #   load-balancer-name     = "alb"
+  #   load-balancer-type     = "application"
+  #   load-balancer-internal = false
+
+  #   load-balancer-tg-name        = "alb-tg"
+  #   load-balancer-tg-port        = 80
+  #   load-balancer-tg-protocol    = "HTTP"
+  #   load-balancer-tg-target-type = "instance"
+
+  #   load-balancer-http-listener-port     = 80
+  #   load-balancer-http-listener-protocol = "HTTP"
+
+  #   load-balancer-https-listener-port     = 443
+  #   load-balancer-https-listener-protocol = "HTTPS"
+  # }
+
+  # load-balancer-tg-arn = module.load-balancer.load-balancer-tg-arn
+
+  # load-balancer-dns-name = module.load-balancer.load-balancer-dns-name
+  # load-balancer-zone-id  = module.load-balancer.load-balancer-zone-id
+
+  # route53-record-properties = {
+  #   route53-ip-record-count   = 1
+  #   route53-ip-record-name    = "dev.example.com"
+  #   route53-ip-record-type    = "A"
+  #   route53-ip-record-ttl     = 300
+  #   route53-ip-record-records = [""]
+
+  #   route53-apex-alias-record-count    = 0
+  #   route53-apex-alias-record-name     = "example.com"
+  #   route53-apex-alias-record-type     = "A"
+  #   route53-apex-zone-id               = "${local.route53-apex-zone-id}"
+  #   route53-apex-alias-record-dns-name = "${local.load-balancer-dns-name}"
+  #   route53-apex-alias-record-zone-id  = "${local.load-balancer-zone-id}"
+
+  #   route53-dev-alias-record-count    = 0
+  #   route53-dev-alias-record-name     = "dev.example.com"
+  #   route53-dev-alias-record-type     = "A"
+  #   route53-dev-zone-id               = "${local.route53-dev-zone-id}"
+  #   route53-dev-alias-record-dns-name = "${local.load-balancer-dns-name}"
+  #   route53-dev-alias-record-zone-id  = "${local.load-balancer-zone-id}"
+  # }
+}
