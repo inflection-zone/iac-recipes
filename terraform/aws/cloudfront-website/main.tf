@@ -1,6 +1,6 @@
 module "s3" {
   source = "github.com/sahilphule/templates/terraform/modules/aws/s3"
-  # source = "../../../../../../templates/terraform/modules/aws/s3"
+  # source = "../../../../../templates/terraform/modules/aws/s3"
 
   s3-bucket-properties = local.s3-bucket-properties
   s3-bucket-policy     = local.s3-bucket-policy
@@ -8,7 +8,7 @@ module "s3" {
 
 module "acm-route53" {
   source = "github.com/sahilphule/templates/terraform/modules/aws/acm-route53"
-  # source = "../../../../../../templates/terraform/modules/aws/acm-route53"
+  # source = "../../../../../templates/terraform/modules/aws/acm-route53"
 
   acm-properties          = local.acm-properties
   route53-zone-properties = local.route53-zone-properties
@@ -16,7 +16,7 @@ module "acm-route53" {
 
 module "cloudfront" {
   source = "github.com/sahilphule/templates/terraform/modules/aws/cloudfront"
-  # source = "../../../../../../templates/terraform/modules/aws/cloudfront"
+  # source = "../../../../../templates/terraform/modules/aws/cloudfront"
 
   cloudfront-properties          = local.cloudfront-properties
   s3-bucket-regional-domain-name = local.s3-bucket-regional-domain-name
@@ -30,7 +30,7 @@ module "cloudfront" {
 
 module "route53-record" {
   source = "github.com/sahilphule/templates/terraform/modules/aws/route53-record"
-  # source = "../../../../../../templates/terraform/modules/aws/route53-record"
+  # source = "../../../../../templates/terraform/modules/aws/route53-record"
 
   route53-record-properties = local.route53-record-properties
 
