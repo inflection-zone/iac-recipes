@@ -1,0 +1,3 @@
+from inflection_zone_pulumi.modules.azure.resource_group import resource_group
+from inflection_zone_pulumi.modules.azure.vnet import vnet
+from inflection_zone_pulumi.modules.azure.virtual_machine import virtual_machine

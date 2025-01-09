@@ -24,12 +24,12 @@ locals {
 
   # virtual-machine-properties
   virtual-machine-properties = {
+    public-ip-name              = "vm-public-ip"
+    public-ip-allocation-method = "Static"
+
     network-interface-name                          = "vm-nic"
     network-interface-ip-configuration-name         = "vm-ip-configuration"
     network-interface-private-ip-address-allocation = "Dynamic"
-
-    public-ip-name              = "vm-public-ip"
-    public-ip-allocation-method = "Static"
 
     network-security-group-name = "vm-network-security-group"
 
@@ -46,8 +46,8 @@ locals {
 
     linux-vm-name                            = "vm"
     linux-vm-size                            = "Standard_DS1_v2"
-    linux-vm-admin-username                  = "root"
-    linux-vm-admin-password                  = "password"
+    linux-vm-admin-username                  = ""
+    linux-vm-admin-password                  = ""
     linux-vm-disable-password-authentication = false
     linux-vm-custom-data                     = "../../../startup-configs/ubuntu/docker.tpl"
 
@@ -55,7 +55,7 @@ locals {
 
     linux-vm-os-disk-name                 = "vm-os-disk"
     linux-vm-os-disk-caching              = "ReadWrite"
-    linux-vm-os-disk-storage-account-type = "Premium_LRS"
+    linux-vm-os-disk-storage-account-type = "Standard_LRS"
 
     vm-source-image-reference-publisher = "Canonical"
     vm-source-image-reference-offer     = "0001-com-ubuntu-server-jammy"
