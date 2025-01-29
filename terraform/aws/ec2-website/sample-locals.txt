@@ -27,15 +27,14 @@ locals {
       "10.0.104.0/24"
     ]
 
-    vpc-tag-value                = "vpc"
-    vpc-public-subnet-tag-value  = "public-vpc"
-    vpc-private-subnet-tag-value = "private-vpc"
-    vpc-igw-tag-value            = "igw"
+    vpc-tag-value                = "static-website-dev-vpc"
+    vpc-public-subnet-tag-value  = "static-website-dev-public-vpc"
+    vpc-private-subnet-tag-value = "static-website-dev-private-vpc"
+    vpc-igw-tag-value            = "static-website-dev-igw"
   }
 
-  vpc-id              = module.vpc.vpc-id
-  vpc-public-subnets  = module.vpc.vpc-public-subnets
-  vpc-private-subnets = module.vpc.vpc-private-subnets
+  vpc-id             = module.vpc.vpc-id
+  vpc-public-subnets = module.vpc.vpc-public-subnets
 
   # ec2 properties
   ec2-properties = {
@@ -63,22 +62,22 @@ locals {
     ec2-instance-sg-egress-ipv6-cidr-blocks = "::/0"
     ec2-instance-sg-egress-ipv6-protocol    = "-1"
 
-    ec2-instance-sg-tag-value = "sg"
+    ec2-instance-sg-tag-value = "static-website-dev-sg"
 
-    ec2-instance-key-pair-name = "server-key"
-    ec2-instance-public-key    = "~/desktop/aws/ssh-keys/server-key.pub"
+    ec2-instance-key-pair-name = "static-website-dev-server-key"
+    ec2-instance-public-key    = "static-website-dev-server-key.pub"
 
     ec2-instance-type                        = "t2.micro"
     ec2-instance-user-data                   = "../../aws/linux-user-data.tpl"
     ec2-instance-associate-public-ip-address = true
-    ec2-instance-tag-value                   = "server"
+    ec2-instance-tag-value                   = "static-website-dev-server"
   }
 
   # ec2-instance-id = module.ec2.ec2-instance-id
 
   # # eip properties
   # eip-properties = {
-  #   eip-instance-id = "${local.ec2-instance-id}"
+  #   eip-instance-id = local.ec2-instance-id
   #   eip-domain      = "vpc"
   # }
 

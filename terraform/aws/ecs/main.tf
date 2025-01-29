@@ -1,19 +1,19 @@
 module "vpc" {
-  source = "github.com/sahilphule/templates/terraform/modules/aws/vpc"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/vpc"
   # source = "../../../../../templates/terraform/modules/aws/vpc"
 
   vpc-properties = local.vpc-properties
 }
 
 module "ecr-repository" {
-  source = "github.com/sahilphule/templates/terraform/modules/aws/ecr"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/ecr"
   # source = "../../../../../templates/terraform/modules/aws/ecr"
 
   ecr-properties = local.ecr-properties
 }
 
 module "rds" {
-  source = "github.com/sahilphule/templates/terraform/modules/aws/rds"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/rds"
   # source = "../../../../../templates/terraform/modules/aws/rds"
 
   rds-properties          = local.rds-properties
@@ -29,7 +29,7 @@ module "rds" {
 }
 
 module "s3" {
-  source = "github.com/sahilphule/templates/terraform/modules/aws/s3"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/s3"
   # source = "../../../../../templates/terraform/modules/aws/s3"
 
   s3-properties = local.s3-properties
@@ -43,7 +43,7 @@ resource "aws_s3_object" "env-file" {
 }
 
 module "load-balancer" {
-  source = "github.com/sahilphule/templates/terraform/modules/aws/load-balancer"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/load-balancer"
   # source = "../../../../../templates/terraform/modules/aws/load-balancer"
 
   load-balancer-properties = local.load-balancer-properties
@@ -52,7 +52,7 @@ module "load-balancer" {
 }
 
 # module "route53" {
-#   source = "github.com/sahilphule/templates/terraform/modules/aws/route53"
+#   source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/route53"
 #   # source = "../../../../../templates/terraform/modules/aws/route53"
 
 #   route53-properties = local.route53-properties
@@ -63,7 +63,7 @@ module "load-balancer" {
 # }
 
 module "ecs" {
-  source = "github.com/sahilphule/templates/terraform/modules/aws/ecs"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/ecs"
   # source = "../../../../../templates/terraform/modules/aws/ecs"
 
   ecs-properties           = local.ecs-properties

@@ -30,7 +30,6 @@ locals {
     acr-admin-enabled                 = true
     acr-public-network-access-enabled = true
   }
-  acr-id = module.acr.acr-id
 
   # mysql flexible properties
   mysql-flexible-properties = {

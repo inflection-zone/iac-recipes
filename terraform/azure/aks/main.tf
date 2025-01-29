@@ -1,12 +1,12 @@
 module "resource-group" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/resource-group"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/resource-group"
   # source = "../../../../../templates/terraform/modules/azure/resource-group"
 
   resource-group-properties = local.resource-group-properties
 }
 
 module "virtual-network" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/virtual-network"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/virtual-network"
   # source = "../../../../../templates/terraform/modules/azure/virtual-network"
 
   resource-group-properties  = local.resource-group-properties
@@ -18,7 +18,7 @@ module "virtual-network" {
 }
 
 module "acr" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/acr"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/acr"
   # source = "../../../../../templates/terraform/modules/azure/acr"
 
   resource-group-properties = local.resource-group-properties
@@ -30,7 +30,7 @@ module "acr" {
 }
 
 module "mysql-flexible" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/mysql-flexible"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/mysql-flexible"
   # source = "../../../../../templates/terraform/modules/azure/mysql-flexible"
 
   resource-group-properties = local.resource-group-properties
@@ -44,13 +44,12 @@ module "mysql-flexible" {
 }
 
 module "aks" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/aks"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/aks"
   # source = "../../../../../templates/terraform/modules/azure/aks"
 
   resource-group-properties = local.resource-group-properties
   aks-properties            = local.aks-properties
   vnet-public-subnet-id     = local.vnet-public-subnet-id
-  # acr-id                    = local.acr-id
 
   depends_on = [
     module.virtual-network

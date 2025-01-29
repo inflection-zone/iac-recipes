@@ -94,15 +94,15 @@ locals {
     route53-apex-alias-record-count    = 1
     route53-apex-alias-record-name     = "example.com"
     route53-apex-alias-record-type     = "A"
-    route53-apex-zone-id               = "${local.route53-apex-zone-id}"
-    route53-apex-alias-record-dns-name = "${local.cloudfront-distribution-domain-name}"
-    route53-apex-alias-record-zone-id  = "${local.cloudfront-distribution-hosted-zone-id}"
+    route53-apex-zone-id               = local.route53-apex-zone-id
+    route53-apex-alias-record-dns-name = local.cloudfront-distribution-domain-name
+    route53-apex-alias-record-zone-id  = local.cloudfront-distribution-hosted-zone-id
 
     route53-dev-alias-record-count    = 1
     route53-dev-alias-record-name     = "dev.example.com"
     route53-dev-alias-record-type     = "A"
-    route53-dev-zone-id               = "${local.route53-dev-zone-id}"
-    route53-dev-alias-record-dns-name = "${local.cloudfront-distribution-domain-name}"
-    route53-dev-alias-record-zone-id  = "${local.cloudfront-distribution-hosted-zone-id}"
+    route53-dev-zone-id               = local.route53-dev-zone-id
+    route53-dev-alias-record-dns-name = local.cloudfront-distribution-domain-name
+    route53-dev-alias-record-zone-id  = local.cloudfront-distribution-hosted-zone-id
   }
 }

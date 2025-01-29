@@ -12,7 +12,7 @@ locals {
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
       "public"  = 2,
-      "private" = 2
+      "private" = 0
     }
     vpc-public-subnet-cidr-blocks = [
       "10.0.1.0/24",

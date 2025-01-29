@@ -1,12 +1,12 @@
 module "resource-group" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/resource-group"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/resource-group"
   # source = "../../../../../templates/terraform/modules/azure/resource-group"
 
   resource-group-properties = local.resource-group-properties
 }
 
 module "virtual-network" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/virtual-network"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/virtual-network"
   # source = "../../../../../templates/terraform/modules/azure/virtual-network"
 
   resource-group-properties  = local.resource-group-properties
@@ -18,7 +18,7 @@ module "virtual-network" {
 }
 
 module "acr" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/acr"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/acr"
   # source = "../../../../../templates/terraform/modules/azure/acr"
 
   resource-group-properties = local.resource-group-properties
@@ -30,7 +30,7 @@ module "acr" {
 }
 
 module "mysql-flexible" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/mysql-flexible"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/mysql-flexible"
   # source = "../../../../../templates/terraform/modules/azure/mysql-flexible"
 
   resource-group-properties = local.resource-group-properties
@@ -44,7 +44,7 @@ module "mysql-flexible" {
 }
 
 module "storage" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/storage"
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/storage"
   # source = "../../../../../templates/terraform/modules/azure/storage"
 
   resource-group-properties = local.resource-group-properties
@@ -56,19 +56,30 @@ module "storage" {
   ]
 }
 
-module "container-apps" {
-  source = "github.com/sahilphule/templates/terraform/modules/azure/container-apps"
-  # source = "../../../../../templates/terraform/modules/azure/container-apps"
+module "container-apps-setup" {
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/container-apps-setup"
+  # source = "../../../../../templates/terraform/modules/azure/container-apps-setup"
 
-  resource-group-properties = local.resource-group-properties
-  container-app-properties  = local.container-app-properties
-  vnet-public-subnet-id     = local.vnet-public-subnet-id
-  # acr-id                    = local.acr-id
-  # acr-name                  = local.acr-name
-  acr-admin-username = local.acr-admin-username
-  acr-admin-password = local.acr-admin-password
+  resource-group-properties      = local.resource-group-properties
+  container-app-setup-properties = local.container-app-setup-properties
+  vnet-public-subnet-id          = local.vnet-public-subnet-id
 
   depends_on = [
     module.virtual-network
+  ]
+}
+
+module "container-apps" {
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/container-apps"
+  # source = "../../../../../templates/terraform/modules/azure/container-apps"
+
+  resource-group-properties    = local.resource-group-properties
+  container-app-properties     = local.container-app-properties
+  container-app-environment-id = module.container-app-setup.container-app-environment-id
+  acr-admin-username           = local.acr-admin-username
+  acr-admin-password           = local.acr-admin-password
+
+  depends_on = [
+    module.container-apps-setup
   ]
 }
