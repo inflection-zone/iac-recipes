@@ -65,7 +65,7 @@ locals {
     ec2-instance-sg-tag-value = "static-website-dev-sg"
 
     ec2-instance-key-pair-name = "static-website-dev-server-key"
-    ec2-instance-public-key    = "static-website-dev-server-key.pub"
+    ec2-instance-public-key    = "~/desktop/aws/ssh-keys/website-dev-server-key.pub"
 
     ec2-instance-type                        = "t2.micro"
     ec2-instance-user-data                   = "../../aws/linux-user-data.tpl"

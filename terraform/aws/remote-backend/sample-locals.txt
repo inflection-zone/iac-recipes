@@ -1,0 +1,122 @@
+locals {
+
+  aws-region              = "ap-south-1"
+  backend-access-iam-arns = ["arn:aws:iam::443751504066:user/user"]
+
+  # s3 bucket properties
+  s3-bucket-arn = module.s3-bucket.s3-bucket-arn
+
+  s3-bucket-properties = {
+    s3-bucket-name          = "tfstate-s3-bucket"
+    s3-bucket-force-destroy = false
+
+    s3-bucket-versioning = "Enabled"
+
+    s3-bucket-ownership-controls-object-ownership = "BucketOwnerPreferred"
+
+    s3-bucket-acl = "private"
+
+    s3-bucket-website-configuration-count = 0
+
+    s3-bucket-public-access-block-public-acls        = true
+    s3-bucket-public-access-block-public-policy      = true
+    s3-bucket-public-access-ignore-public-acls       = true
+    s3-buckets-public-access-restrict-public-buckets = true
+
+    s3-bucket-policy-count = 0
+  }
+
+  s3-bucket-policy = {
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : [
+            local.backend-access-iam-arns[0]
+          ]
+        },
+        "Action" : [
+          "s3:*"
+        ],
+        "Resource" : [
+          local.s3-bucket-arn,
+          "${local.s3-bucket-arn}/*"
+        ]
+      },
+      {
+        "Effect" : "Deny",
+        "Principal" : "*",
+        "Action" : [
+          "s3:*"
+        ],
+        "Resource" : [
+          local.s3-bucket-arn,
+          "${local.s3-bucket-arn}/*"
+        ],
+        "Condition" : {
+          "StringNotEquals" : {
+            "aws:PrincipalArn" : [
+              local.backend-access-iam-arns[0]
+            ]
+          }
+        }
+      }
+    ]
+  }
+
+  # dynamodb properties
+  dyanamodb-table-arn = module.dynamodb.dynamodb-table-arn
+
+  dynamodb-properties = {
+    dynamodb-table-name           = "tfstate-lock-dynamodb-table"
+    dynamodb-table-billing-mode   = "PAY_PER_REQUEST"
+    dynamodb-table-read-capacity  = 20
+    dynamodb-table-write-capacity = 20
+    dynamodb-table-hash-key       = "LockID"
+    dynamodb-table-range-key      = ""
+
+    dynamodb-table-attribute-name = "LockID"
+    dynamodb-table-attribute-type = "S"
+
+    dynamodb-table-tags-Name        = "tfstate-dynamodb-table"
+    dynamodb-table-tags-Environment = "dev"
+
+    dyanamodb-resource-policy-count = 0
+  }
+
+  dynamodb-resource-policy = {
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : [
+            local.backend-access-iam-arns[0]
+          ]
+        },
+        "Action" : [
+          "dynamodb:*"
+        ],
+        "Resource" : [
+          local.dyanamodb-table-arn
+        ]
+      },
+      {
+        "Effect" : "Deny",
+        "Principal" : "*",
+        "Action" : "dynamodb:*",
+        "Resource" : [
+          local.dyanamodb-table-arn
+        ]
+        "Condition" : {
+          "StringNotEquals" : {
+            "aws:PrincipalArn" : [
+              local.backend-access-iam-arns[0]
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
