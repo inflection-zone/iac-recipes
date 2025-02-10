@@ -11,6 +11,14 @@ terraform {
 
 provider "aws" {
   region = local.aws_region
+
   # shared_config_files = ["~/.aws/config"]
   shared_credentials_files = ["~/.aws/credentials"]
+
+  default_tags {
+    tags = {
+      Environment = local.aws-default-tags-Environment
+      ManagedBy   = local.aws-default-tags-ManagedBy
+    }
+  }
 }

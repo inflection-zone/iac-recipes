@@ -1,6 +1,8 @@
 locals {
 
-  aws-region = "us-east-1"
+  aws-region                   = "us-east-1"
+  aws-default-tags-Environment = "dev"
+  aws-default-tags-ManagedBy   = "terraform"
 
   # s3 properties
   s3-bucket-properties = {

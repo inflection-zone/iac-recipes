@@ -1,6 +1,9 @@
 locals {
 
-  aws-region              = "ap-south-1"
+  aws-region                   = "ap-south-1"
+  aws-default-tags-Environment = "remote-state"
+  aws-default-tags-ManagedBy   = "terraform"
+
   backend-access-iam-arns = ["arn:aws:iam::443751504066:user/user"]
 
   # s3 bucket properties
