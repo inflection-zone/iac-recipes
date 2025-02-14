@@ -60,9 +60,14 @@ ec2-website-terraform
 5. Click [code](https://github.com/inflection-zone/iac-recipes/blob/inflection-sahil/terraform/aws/ec2-website/providers.tf) for reference.
 6. The definition of *providers.tf* file is complete.
 7. Now create the *main.tf* file.
-8. Define the following modules inside it:
+8. Define the following modules & resources inside it:
     - module.vpc
     - module. ec2
+    - module.eip
+    - module.acm-route53
+    - module.load-balancer
+    - resource.aws_alb_target_group_attachment
+    - module.route53-record
 9. Click [code](https://github.com/inflection-zone/iac-recipes/blob/inflection-sahil/terraform/aws/ec2-website/main.tf) for reference.
 10. The definition of *main.tf* file is complete.
 11. Now we will create *outputs.tf* file.
@@ -75,6 +80,11 @@ ec2-website-terraform
     - local.aws-region
     - local.vpc-properties
     - local.ec2-properties
+    - local.eip-properties
+    - local.acm-properties
+    - local.route53-zone-properties
+    - local.load-balancer-properties
+    - local.route53-record-properties
 17. Click [code](https://github.com/inflection-zone/iac-recipes/blob/inflection-sahil/terraform/aws/ec2-website/sample-locals.txt) for reference.
 18. The definition of *locals.tf* file is complete.
 
@@ -109,12 +119,12 @@ Now we will configure the Route53 service for domain routing to the website.
 1. Login to the AWS console and search for the **Route-53** service.
 2. Click open the Route-53 console.
 3. In the left plane of the window, click on **`Hosted zones`**.
-4. Create a new hosted zone for your domain name e.g. **`example.com`**.
-5. On completing, two records of type **`NS`** and **`SOA`** gets created here.
+4. Click on a terraform created hosted zone for your domain name e.g. **`example.com`**.
+5. Two records of type **`NS`** and **`SOA`** will be present here.
 6. Copy all four values from column **`Value/Route traffic to`** of **`NS`** record.
 7. Go to your domain provider's website and add these copied nameservers in place of your domain's original nameservers. This will dedicate your domain to AWS.
-8. Again go to the hosted zone added in the AWS Route-53 console.
-9. Add a **`dev.example.com`**(replace with your domain name) record of type `A` pointing to your EC2 instance's IP address received from running **`terraform output`** command.
+8. Terraform will keep applying terraform acm certificate until your domain gets activated.
+9. Once done, route53-record will be created.
 
 ---
 ## SSH Into EC2 Server
@@ -152,7 +162,7 @@ Now we will SSH into the EC2 instance and configure the server for website deplo
     sudo pm2 startup
 ```
 6. Now we will configure the Nginx as a Reverse Proxy with HTTPS to secure the web connection.
-7. Click [code](https://github.com/inflection-sahil/website-devops/blob/master/nginx/default.conf) and copy the default.conf file and paste it into the vim terminal opened by running the following command. Also, replace the <*dev.example.com*> with your desired domain name. Click **`esc`** and type **`:wq`** to write the file.
+7. Click [code](https://github.com/inflection-templates/devops-templates/blob/main/nginx/sample-default-2.conf) and copy the sample-default-2.conf file and paste it into the vim terminal opened by running the following command. Also, replace the <*dev.example.com*> with your desired domain name. Click **`esc`** and type **`:wq`** to write the file.
 8. Run the following commands to configure the Nginx:
 ```sh
     sudo vim /etc/nginx/conf.d/default.conf

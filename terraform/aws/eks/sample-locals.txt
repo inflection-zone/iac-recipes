@@ -1,5 +1,4 @@
 locals {
-
   aws-region                   = "ap-south-1"
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
@@ -7,14 +6,14 @@ locals {
   # vpc properties
   vpc-properties = {
     availability-zones = [
-      "ap-south-1a",
-      "ap-south-1b",
-      "ap-south-1c"
+      "${local.aws-region}a",
+      "${local.aws-region}b",
+      "${local.aws-region}c"
     ]
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
       "public"  = 2,
-      "private" = 0
+      "private" = 2
     }
     vpc-public-subnet-cidr-blocks = [
       "10.0.1.0/24",
@@ -22,6 +21,7 @@ locals {
       "10.0.3.0/24",
       "10.0.4.0/24"
     ]
+    vpc-public-subnet-map-public-ip-on-launch = true
     vpc-private-subnet-cidr-blocks = [
       "10.0.101.0/24",
       "10.0.102.0/24",
@@ -29,10 +29,10 @@ locals {
       "10.0.104.0/24"
     ]
 
-    vpc-tag-value                = "eks-vpc"
-    vpc-public-subnet-tag-value  = "eks-public-vpc-subnet"
-    vpc-private-subnet-tag-value = "eks-private-vpc-subnet"
-    vpc-igw-tag-value            = "eks-igw"
+    vpc-tags-Name                = "eks-dev-vpc"
+    vpc-public-subnet-tags-Name  = "eks-dev-vpc-public-subnet"
+    vpc-private-subnet-tags-Name = "eks-dev-vpc-private-subnet"
+    vpc-igw-tags-Name            = "eks-dev-igw"
   }
 
   vpc-id              = module.vpc.vpc-id
@@ -41,44 +41,54 @@ locals {
 
   # ecr properties
   ecr-properties = {
-    ecr-repository-name         = "eksecr"
+    ecr-repository-name         = "eksdevecr"
     ecr-repository-force-delete = true
 
-    ecr-public-repository-name          = "eksecr"
+    ecr-public-repository-name          = "eksdevecr"
     ecr-public-repository-force-destroy = true
   }
 
   # rds properties
   rds-properties = {
-    db-identifier          = "eks-db"
-    db-allocated-storage   = 20
-    db-engine              = "mysql"
-    db-engine-version      = "8.0.35"
-    db-instance-class      = "db.t3.micro"
-    db-skip-final-snapshot = true
-    db-publicly-accessible = false
+    rds-owners    = ["137112412989"]
+    rds-ami-value = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
 
-    db-username = ""
-    db-password = ""
+    rds-db-subnet-group-name        = "eks-dev-rds-db-subnet-group"
+    rds-db-subnet-group-description = "eks dev rds db subnet group"
 
-    db-sg-tag-value = "eks-db-sg"
+    rds-security-group-name      = "eks-dev-rds-security-group"
+    rds-security-group-tags-Name = "eks-dev-rds-security-group"
+
+    rds-db-instance-identifier          = "eks-dev-rds-db-instance"
+    rds-db-instance-allocated-storage   = 20
+    rds-db-instance-engine              = "mysql"
+    rds-db-instance-engine-version      = "8.0.35"
+    rds-db-instance-class               = "db.t3.micro"
+    rds-db-instance-name                = "eks-dev-rds-db-instance"
+    rds-db-instance-username            = ""
+    rds-db-instance-password            = ""
+    rds-db-instance-skip-final-snapshot = true
+    rds-db-instance-publicly-accessible = false
   }
 
   # bastion host properties
   bastion-host-properties = {
-    bastion-host-instance-type = "t2.micro"
+    bastion-host-security-group-name      = "eks-dev-bastion-host-security-group"
+    bastion-host-security-group-tags-Name = "eks-dev-bastion-host-security-group"
+
+    bastion-host-key-pair-name = "eks-dev-bastion-host-key-pair"
     bastion-host-public-key    = "~/.ssh/bastion-key.pub"
 
-    bastion-host-sg-tag-value = "eks-bastion-host-sg"
-    bastion-host-tag-value    = "eks-bastion-host"
+    bastion-host-instance-type = "t2.micro"
+    bastion-host-tags-Name     = "eks-dev-bastion-host"
   }
 
   # eks properties
   eks-properties = {
-    eks-cluster-role-name = "eks-cluster-role"
-    eks-cluster-name      = "eks-cluster"
-    eks-node-role-name    = "eks-node-group-role"
-    eks-node-group-name   = "eks-node-group"
+    eks-cluster-role-name = "eks-dev-cluster-role"
+    eks-cluster-name      = "eks-dev-cluster"
+    eks-node-role-name    = "eks-dev-node-group-role"
+    eks-node-group-name   = "eks-dev-node-group"
     eks-instance-types = [
       "t2.medium"
     ]

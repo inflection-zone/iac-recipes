@@ -5,14 +5,14 @@ locals {
   # resource group properties
   resource-group-properties = {
     rg-location = "Central India"
-    rg-name     = "tfstate-resource-group"
+    rg-name     = "remote-backend-dev-resource-group"
   }
 
   vnet-public-subnet-id = ""
 
   # storage account properties
   storage-properties = {
-    sa-name                          = "tfstatestorageaccount"
+    sa-name                          = "remotebackenddevsa"
     sa-tier                          = "Standard"
     sa-kind                          = "StorageV2"
     sa-replication-type              = "LRS"
@@ -25,7 +25,7 @@ locals {
     sa-network-rules-bypass         = ["Metrics"] # Metrics, Logging, AzureServices (Default), None, set [] to remove it
 
     sc-count                 = 1
-    sc-name                  = ["tfstate"]
+    sc-name                  = ["dev-tfstate"]
     sc-container-access-type = "private"
   }
 }

@@ -1,13 +1,13 @@
 module "resource-group" {
   source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/resource-group"
-  # source = "../../../../../../../templates/terraform/modules/azure/resource-group"
+  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/resource-group"
 
   resource-group-properties = local.resource-group-properties
 }
 
 module "virtual-network" {
   source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/virtual-network"
-  # source = "../../../../../../../templates/terraform/modules/azure/virtual-network"
+  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/virtual-network"
 
   resource-group-properties  = local.resource-group-properties
   virtual-network-properties = local.virtual-network-properties
@@ -19,7 +19,7 @@ module "virtual-network" {
 
 module "virtual-machine" {
   source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/virtual-machine"
-  # source = "../../../../../../../templates/terraform/modules/azure/virtual-machine"
+  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/virtual-machine"
 
   resource-group-properties  = local.resource-group-properties
   virtual-machine-properties = local.virtual-machine-properties

@@ -1,5 +1,4 @@
 locals {
-
   aws-region                   = "ap-south-1"
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
@@ -7,14 +6,14 @@ locals {
   # vpc properties
   vpc-properties = {
     availability-zones = [
-      "ap-south-1a",
-      "ap-south-1b",
-      "ap-south-1c"
+      "${local.aws-region}a",
+      "${local.aws-region}b",
+      "${local.aws-region}c"
     ]
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
       "public"  = 2,
-      "private" = 0
+      "private" = 2
     }
     vpc-public-subnet-cidr-blocks = [
       "10.0.1.0/24",
@@ -22,6 +21,7 @@ locals {
       "10.0.3.0/24",
       "10.0.4.0/24"
     ]
+    vpc-public-subnet-map-public-ip-on-launch = true
     vpc-private-subnet-cidr-blocks = [
       "10.0.101.0/24",
       "10.0.102.0/24",
@@ -29,10 +29,10 @@ locals {
       "10.0.104.0/24"
     ]
 
-    vpc-tag-value                = "ecs-vpc"
-    vpc-public-subnet-tag-value  = "ecs-public-vpc"
-    vpc-private-subnet-tag-value = "ecs-private-vpc"
-    vpc-igw-tag-value            = "ecs-igw"
+    vpc-tags-Name                = "ecs-dev-vpc"
+    vpc-public-subnet-tags-Name  = "ecs-dev-vpc-public-subnet"
+    vpc-private-subnet-tags-Name = "ecs-dev-vpc-private-subnet"
+    vpc-igw-tags-Name            = "ecs-dev-vpc-igw"
   }
 
   vpc-id              = module.vpc.vpc-id
@@ -41,45 +41,53 @@ locals {
 
   # ecr properties
   ecr-properties = {
-    ecr-repository-name         = "ecsecr"
+    ecr-repository-name         = "ecsdevecr"
     ecr-repository-force-delete = true
 
-    ecr-public-repository-name          = "ecsecr"
+    ecr-public-repository-name          = "ecsdevecr"
     ecr-public-repository-force-destroy = true
   }
-  # ecr-repository-url  = module.ecr-repository.repository-url
-  dockerhub-repository-url = ""
+
+  ecr-repository-url = module.ecr-repository.ecr-repository-url
 
   # rds properties
   rds-properties = {
-    db-identifier          = "ecs-db"
-    db-allocated-storage   = 20
-    db-engine              = "mysql"
-    db-engine-version      = "8.0.35"
-    db-instance-class      = "db.t3.micro"
-    db-skip-final-snapshot = true
-    db-publicly-accessible = false
+    rds-owners    = ["137112412989"]
+    rds-ami-value = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
 
-    db-username = ""
-    db-password = ""
+    rds-db-subnet-group-name        = "ecs-dev-rds-db-subnet-group"
+    rds-db-subnet-group-description = "ecs dev rds db subnet group"
 
-    db-sg-tag-value = "ecs-db-sg"
+    rds-security-group-name      = "ecs-dev-rds-security-group"
+    rds-security-group-tags-Name = "ecs-dev-rds-security-group"
+
+    rds-db-instance-identifier          = "ecs-dev-rds-db-instance"
+    rds-db-instance-allocated-storage   = 20
+    rds-db-instance-engine              = "mysql"
+    rds-db-instance-engine-version      = "8.0.35"
+    rds-db-instance-class               = "db.t3.micro"
+    rds-db-instance-name                = "ecs-dev-rds-db-instance"
+    rds-db-instance-username            = "root"
+    rds-db-instance-password            = "password"
+    rds-db-instance-skip-final-snapshot = true
+    rds-db-instance-publicly-accessible = false
   }
 
   # bastion host properties
   bastion-host-properties = {
-    bastion-host-instance-type = "t2.micro"
+    bastion-host-security-group-name      = "ecs-dev-bastion-host-security-group"
+    bastion-host-security-group-tags-Name = "ecs-dev-bastion-host-security-group"
+
+    bastion-host-key-pair-name = "ecs-dev-bastion-host-key-pair"
     bastion-host-public-key    = "~/.ssh/bastion-key.pub"
 
-    bastion-host-sg-tag-value = "ecs-bastion-host"
-    bastion-host-tag-value    = "ecs-bastion-host"
+    bastion-host-instance-type = "t2.micro"
+    bastion-host-tags-Name     = "ecs-dev-bastion-host"
   }
 
-  # s3 bucket properties
-  s3-bucket-arn = module.s3-bucket.s3-bucket-arn
-
+  # s3 properties
   s3-bucket-properties = {
-    s3-bucket-name          = "s3-bucket"
+    s3-bucket-name          = "ecs-dev-s3-bucket"
     s3-bucket-force-destroy = true
 
     s3-bucket-versioning = "Disabled"
@@ -98,9 +106,9 @@ locals {
     s3-bucket-policy-count = 0
   }
 
-  s3-bucket-id          = module.s3.s3-bucket-id
-  s3-object-key         = "env.config"
-  s3-object-source-path = "../../../compose/.env"
+  s3-bucket-id          = module.s3-bucket.s3-bucket-id
+  s3-object-key         = "/env.config"
+  s3-object-source-path = "./compose/.env"
 
   s3-bucket-policy = {
     "Version" : "2012-10-17",
@@ -109,58 +117,123 @@ locals {
         "Effect" : "Allow",
         "Principal" : "*",
         "Action" : "*",
-        # "Resource" : "${local.s3-bucket-arn}/*"
+        "Resource" : "arn:aws:s3:::${local.s3-bucket-properties.s3-bucket-name}/*"
       }
     ]
   }
 
-  # load balancer properties
-  load-balancer-properties = {
-    load-balancer-name    = "ecs-lb"
-    load-balancer-type    = "application"
-    load-balancer-tg-name = "ecs-lb-tg"
-    port                  = local.ecs-properties.ecs-container-port
-
-    load-balancer-sg-tag-value = "ecs-load-balancer-sg"
+  # acm properties
+  acm-properties = {
+    acm-certificate-domain-name                      = "example.com"
+    acm-certificate-subject-alternative-domain-names = ["dev.example.com"]
+    acm-certificate-validation-method                = "DNS"
   }
 
-  load-balancer-tg-arn = module.load-balancer.load-balancer-tg-arn
-  load-balancer-sg-id  = module.load-balancer.load-balancer-sg-id
+  acm-certificate-arn  = module.acm-route53.acm-certificate-arn
+  route53-apex-zone-id = module.acm-route53.route53-apex-zone-id
+  route53-dev-zone-id  = module.acm-route53.route53-apex-zone-id
 
-  # # route53 properties
-  # route53-properties = {
-  #   route53-zone-name = "example.com"
+  # route53 properties
+  route53-zone-properties = {
+    route53-apex-zone-count = 1
+    route53-apex-zone-name  = "example.com"
 
-  #   route53-record-name = "example.com"
-  #   route53-record-type = "A"
-  #   route53-record-ttl = 300
-  #   route53-record-records = [locals.eip-lb-public-ip]
+    route53-dev-zone-count = 0
+    route53-dev-zone-name  = "dev.example.com"
+  }
 
-  #   route53-record-dns-name = locals.load-balancer-dns-name
-  #   route53-record-alias-zone-id = locals.load-balancer-zone-id
-  # }
+  # load balancer properties
+  load-balancer-properties = {
+    lb-security-group-name      = "ecs-dev-lb-security-group"
+    lb-security-group-tags-Name = "ecs-dev-lb-security-group"
+
+    lb-vpc-security-group-ingress-https-cidr-blocks = "0.0.0.0/0"
+    lb-vpc-security-group-ingress-https-from-port   = 443
+    lb-vpc-security-group-ingress-https-protocol    = "tcp"
+    lb-vpc-security-group-ingress-https-to-port     = 443
+
+    lb-vpc-security-group-egress-ipv4-cidr-blocks = "0.0.0.0/0"
+    lb-vpc-security-group-egress-ipv4-protocol    = "-1"
+
+    lb-vpc-security-group-egress-ipv6-cidr-blocks = "::/0"
+    lb-vpc-security-group-egress-ipv6-protocol    = "-1"
+
+    lb-name     = "ecs-dev-lb"
+    lb-type     = "application"
+    lb-internal = false
+
+    lb-target-group-name        = "ecs-dev-lb-target-group"
+    lb-target-group-port        = local.ecs-properties.ecs-container-port
+    lb-target-group-protocol    = "HTTP"
+    lb-target-group-target-type = "instance"
+
+    lb-http-listener-port     = 80
+    lb-http-listener-protocol = "HTTP"
+
+    lb-https-listener-port     = 443
+    lb-https-listener-protocol = "HTTPS"
+  }
+
+  lb-target-group-arn  = module.load-balancer.lb-target-group-arn
+  lb-security-group-id = module.load-balancer.lb-security-group-id
+
+  lb-dns-name = module.load-balancer.lb-dns-name
+  lb-zone-id  = module.load-balancer.lb-zone-id
+
+  route53-record-properties = {
+    route53-ip-record-count   = 0
+    route53-ip-record-name    = "example.com"
+    route53-ip-record-type    = "ip"
+    route53-ip-record-ttl     = 300
+    route53-ip-record-records = ["127.0.0.1"]
+
+    route53-apex-alias-record-count    = 1
+    route53-apex-alias-record-name     = "example.com"
+    route53-apex-alias-record-type     = "A"
+    route53-apex-zone-id               = local.route53-apex-zone-id
+    route53-apex-alias-record-dns-name = local.lb-dns-name
+    route53-apex-alias-record-zone-id  = local.lb-zone-id
+
+    route53-dev-alias-record-count    = 0
+    route53-dev-alias-record-name     = "dev.example.com"
+    route53-dev-alias-record-type     = "NS"
+    route53-dev-zone-id               = ""
+    route53-dev-alias-record-dns-name = ""
+    route53-dev-alias-record-zone-id  = ""
+  }
 
   # ecs properties
   ecs-properties = {
-    ecs-cluster-name             = "ecs-cluster"
-    ecs-task-execution-role-name = "ecs-task-execution-role"
-    ecs-task-family              = "ecs-task-family"
-    ecs-task-name                = "ecs-task"
-    ecs-container-image          = local.dockerhub-repository-url
-    ecs-container-name           = "app-service"
-    ecs-container-port           = ""
-    s3-config-bucket             = local.s3-properties.s3-bucket-name
-    s3-config-path               = ""
-    ecs-service-name             = "ecs-service"
+    ecs-cluster-name = "ecs-dev-cluster"
 
-    ecs-service-sg-tag-value = "ecs-service-sg"
+    ecs-task-execution-role-name = "ecs-dev-task-execution-role"
+
+    ecs-task-definition-family                   = "ecs-dev-task-definition-family"
+    ecs-task-definition-network-mode             = "awsvpc"
+    ecs-task-definition-requires-compatibilities = ["FARGATE"]
+    ecs-task-definition-cpu                      = 512
+    ecs-task-definition-memory                   = 1024
+
+    ecs-service-security-group-name      = "ecs-dev-service-security-group"
+    ecs-service-security-group-tags-Name = "ecs-dev-service-security-group"
+
+    ecs-service-name          = "ecs-dev-service"
+    ecs-service-launch-type   = "FARGATE"
+    ecs-service-desired-count = 1
+
+    ecs-container-name = "nginx-container"
+    ecs-container-port = "80"
   }
+
+  ecs-container-image = local.ecr-repository-url
+  s3-config-bucket    = local.s3-bucket-properties.s3-bucket-name
+  s3-config-path      = ""
 
   ecs-container-definition = <<DEFINITION
     [
       {
         "name": "${local.ecs-properties.ecs-container-name}",
-        "image": "${local.ecs-properties.ecs-container-image}",
+        "image": "${local.ecs-container-image}",
         "cpu": 512,
         "memory": 1024,
         "essential": true,
@@ -173,11 +246,11 @@ locals {
         "environment": [
           {
             "name": "S3_CONFIG_BUCKET",
-            "value": "${local.ecs-properties.s3-config-bucket}"
+            "value": "${local.s3-config-bucket}"
           },
           {
             "name": "S3_CONFIG_PATH",
-            "value": "${local.ecs-properties.s3-config-path}"
+            "value": "${local.s3-config-path}"
           }
         ]
       }

@@ -5,16 +5,16 @@ locals {
   # resource group properties
   resource-group-properties = {
     rg-location = "Central India"
-    rg-name     = "vm-resource-group"
+    rg-name     = "vm-dev-resource-group"
   }
 
   # virtual network properties
   virtual-network-properties = {
-    vnet-name = "vm-vnet"
+    vnet-name = "vm-dev-vnet"
     vnet-address-space = [
       "10.0.0.0/16"
     ]
-    vnet-public-subnet-name = "vm-vnet-public-subnet"
+    vnet-public-subnet-name = "vm-dev-vnet-public-subnet"
     vnet-public-subnet-address-prefixes = [
       "10.0.2.0/24"
     ]
@@ -24,14 +24,14 @@ locals {
 
   # virtual-machine-properties
   virtual-machine-properties = {
-    public-ip-name              = "vm-public-ip"
+    public-ip-name              = "vm-dev-public-ip"
     public-ip-allocation-method = "Static"
 
-    network-interface-name                          = "vm-nic"
-    network-interface-ip-configuration-name         = "vm-ip-configuration"
+    network-interface-name                          = "vm-dev-nic"
+    network-interface-ip-configuration-name         = "vm-dev-ip-configuration"
     network-interface-private-ip-address-allocation = "Dynamic"
 
-    network-security-group-name = "vm-network-security-group"
+    network-security-group-name = "vm-dev-network-security-group"
 
     network-security-rule-count                      = 3
     network-security-rule-name                       = ["ssh-inbound", "http-inbound", "https-inbound"]
@@ -44,16 +44,16 @@ locals {
     network-security-rule-source-address-prefix      = ["*", "*", "*"]
     network-security-rule-destination-address-prefix = ["*", "*", "*"]
 
-    linux-vm-name                            = "vm"
+    linux-vm-name                            = "vm-dev-server"
     linux-vm-size                            = "Standard_DS1_v2"
     linux-vm-admin-username                  = ""
     linux-vm-admin-password                  = ""
     linux-vm-disable-password-authentication = false
     linux-vm-custom-data                     = "../../../startup-configs/ubuntu/docker.tpl"
 
-    linux-vm-admin-ssh-key-username = "vm-ssh-key"
+    linux-vm-admin-ssh-key-username = "vm-dev-ssh-key"
 
-    linux-vm-os-disk-name                 = "vm-os-disk"
+    linux-vm-os-disk-name                 = "vm-dev-os-disk"
     linux-vm-os-disk-caching              = "ReadWrite"
     linux-vm-os-disk-storage-account-type = "Standard_LRS"
 

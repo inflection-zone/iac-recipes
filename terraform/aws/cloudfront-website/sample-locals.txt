@@ -1,12 +1,11 @@
 locals {
-
   aws-region                   = "us-east-1"
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
 
   # s3 properties
   s3-bucket-properties = {
-    s3-bucket-name          = "static-website-s3-bucket"
+    s3-bucket-name          = "cloudfront-website-s3-bucket"
     s3-bucket-force-destroy = true
 
     s3-bucket-versioning = "Disabled"
@@ -37,7 +36,7 @@ locals {
     ]
   }
 
-  s3-bucket-regional-domain-name = module.s3.s3-bucket-regional-domain-name
+  s3-bucket-regional-domain-name = module.s3-bucket.s3-bucket-regional-domain-name
 
   # acm properties
   acm-properties = {
@@ -71,7 +70,7 @@ locals {
     cloudfront-distribution-aliases             = ["example.com", "dev.example.com"]
     cloudfront-distribution-price-class         = "PriceClass_200"
     cloudfront-distribution-is-ipv6-enabled     = false
-    cloudfront-distribution-comment             = "static website"
+    cloudfront-distribution-comment             = "cloudfront official website"
 
     cloudfront-distribution-origin-id = "primaryS3"
 
