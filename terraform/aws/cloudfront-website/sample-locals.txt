@@ -4,7 +4,9 @@ locals {
   aws-default-tags-ManagedBy   = "terraform"
 
   # s3 properties
-  s3-bucket-properties = {
+  s3-bucket-arn = module.s3.s3-bucket-arn
+
+  s3-properties = {
     s3-bucket-name          = "cloudfront-website-s3-bucket"
     s3-bucket-force-destroy = true
 
@@ -14,12 +16,16 @@ locals {
 
     s3-bucket-acl = "public-read"
 
-    s3-bucket-website-configuration-count = 1
-
     s3-bucket-public-access-block-public-acls        = false
     s3-bucket-public-access-block-public-policy      = false
     s3-bucket-public-access-ignore-public-acls       = false
     s3-buckets-public-access-restrict-public-buckets = false
+
+    s3-bucket-website-configuration-count = 1
+
+    s3-object-count  = 1
+    s3-object-key    = "/static-website"
+    s3-object-source = "../static-website/index.html"
 
     s3-bucket-policy-count = 1
   }
@@ -31,12 +37,12 @@ locals {
         "Effect" : "Allow",
         "Principal" : "*",
         "Action" : ["s3:GetObject"],
-        "Resource" : "arn:aws:s3:::${local.s3-bucket-properties.s3-bucket-name}/*"
+        "Resource" : "${local.s3-bucket-arn}/*"
       }
     ]
   }
 
-  s3-bucket-regional-domain-name = module.s3-bucket.s3-bucket-regional-domain-name
+  s3-bucket-regional-domain-name = module.s3.s3-bucket-regional-domain-name
 
   # acm properties
   acm-properties = {

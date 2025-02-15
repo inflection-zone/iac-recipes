@@ -12,7 +12,7 @@ locals {
     ]
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
-      "public"  = 2,
+      "public"  = 1,
       "private" = 2
     }
     vpc-public-subnet-cidr-blocks = [
@@ -33,6 +33,8 @@ locals {
     vpc-public-subnet-tags-Name  = "ecs-dev-vpc-public-subnet"
     vpc-private-subnet-tags-Name = "ecs-dev-vpc-private-subnet"
     vpc-igw-tags-Name            = "ecs-dev-vpc-igw"
+    vpc-public-rtb-tags-Name     = "ecs-dev-vpc-public-rtb"
+    vpc-private-rtb-tags-Name    = "ecs-dev-vpc-private-rtb"
   }
 
   vpc-id              = module.vpc.vpc-id
@@ -50,43 +52,10 @@ locals {
 
   ecr-repository-url = module.ecr-repository.ecr-repository-url
 
-  # rds properties
-  rds-properties = {
-    rds-owners    = ["137112412989"]
-    rds-ami-value = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
-
-    rds-db-subnet-group-name        = "ecs-dev-rds-db-subnet-group"
-    rds-db-subnet-group-description = "ecs dev rds db subnet group"
-
-    rds-security-group-name      = "ecs-dev-rds-security-group"
-    rds-security-group-tags-Name = "ecs-dev-rds-security-group"
-
-    rds-db-instance-identifier          = "ecs-dev-rds-db-instance"
-    rds-db-instance-allocated-storage   = 20
-    rds-db-instance-engine              = "mysql"
-    rds-db-instance-engine-version      = "8.0.35"
-    rds-db-instance-class               = "db.t3.micro"
-    rds-db-instance-name                = "ecs-dev-rds-db-instance"
-    rds-db-instance-username            = "root"
-    rds-db-instance-password            = "password"
-    rds-db-instance-skip-final-snapshot = true
-    rds-db-instance-publicly-accessible = false
-  }
-
-  # bastion host properties
-  bastion-host-properties = {
-    bastion-host-security-group-name      = "ecs-dev-bastion-host-security-group"
-    bastion-host-security-group-tags-Name = "ecs-dev-bastion-host-security-group"
-
-    bastion-host-key-pair-name = "ecs-dev-bastion-host-key-pair"
-    bastion-host-public-key    = "~/.ssh/bastion-key.pub"
-
-    bastion-host-instance-type = "t2.micro"
-    bastion-host-tags-Name     = "ecs-dev-bastion-host"
-  }
-
   # s3 properties
-  s3-bucket-properties = {
+  # s3-bucket-arn = module.s3.s3-bucket-arn
+
+  s3-properties = {
     s3-bucket-name          = "ecs-dev-s3-bucket"
     s3-bucket-force-destroy = true
 
@@ -96,19 +65,19 @@ locals {
 
     s3-bucket-acl = "private"
 
-    s3-bucket-website-configuration-count = 0
-
     s3-bucket-public-access-block-public-acls        = false
     s3-bucket-public-access-block-public-policy      = false
     s3-bucket-public-access-ignore-public-acls       = false
     s3-buckets-public-access-restrict-public-buckets = false
 
+    s3-bucket-website-configuration-count = 0
+
+    s3-object-count  = 1
+    s3-object-key    = "/env.config"
+    s3-object-source = "../compose/.env"
+
     s3-bucket-policy-count = 0
   }
-
-  s3-bucket-id          = module.s3-bucket.s3-bucket-id
-  s3-object-key         = "/env.config"
-  s3-object-source-path = "./compose/.env"
 
   s3-bucket-policy = {
     "Version" : "2012-10-17",
@@ -117,9 +86,50 @@ locals {
         "Effect" : "Allow",
         "Principal" : "*",
         "Action" : "*",
-        "Resource" : "arn:aws:s3:::${local.s3-bucket-properties.s3-bucket-name}/*"
+        # "Resource" : "${local.s3-bucket-arn}/*"
       }
     ]
+  }
+
+  # rds properties
+  rds-properties = {
+    rds-db-subnet-group-name        = "ecs-dev-rds-db-subnet-group"
+    rds-db-subnet-group-description = "ecs dev rds db subnet group"
+
+    rds-security-group-name      = "ecs-dev-rds-security-group"
+    rds-security-group-tags-Name = "ecs-dev-rds-security-group"
+
+    rds-db-instance-count      = 1
+    rds-db-instance-identifier = ["ecs-dev-rds-db-instance"]
+
+    rds-db-instance-class               = ["db.t3.micro"]
+    rds-db-instance-engine              = ["mysql"]  # mysql, postgres
+    rds-db-instance-engine-version      = ["8.0.35"] # 8.0.35, 17.2
+    rds-db-instance-allocated-storage   = [20]
+    rds-db-instance-storage-type        = ["gp2"]
+    rds-db-instance-publicly-accessible = [false]
+    rds-db-instance-skip-final-snapshot = [true]
+
+    rds-db-instance-db-name  = ["db"]
+    rds-db-instance-username = [""]
+    rds-db-instance-password = [""]
+  }
+
+  # bastion-host-properties
+  bastion-host-properties = {
+    bastion-host-count = 1
+
+    bastion-host-ami-owners = ["137112412989"]
+    bastion-host-ami-value  = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
+
+    bastion-host-security-group-name      = "ecs-dev-bastion-host-security-group"
+    bastion-host-security-group-tags-Name = "ecs-dev-bastion-host-security-group"
+
+    bastion-host-key-pair-name = "ecs-dev-bastion-host-ssh-key-pair"
+    bastion-host-public-key    = "~/.ssh/ecs-dev-bastion-host-ssh-key-pair.pub"
+
+    bastion-host-instance-type = "t2.micro"
+    bastion-host-tags-Name     = "ecs-dev-bastion-host"
   }
 
   # acm properties
@@ -226,7 +236,7 @@ locals {
   }
 
   ecs-container-image = local.ecr-repository-url
-  s3-config-bucket    = local.s3-bucket-properties.s3-bucket-name
+  s3-config-bucket    = local.s3-properties.s3-bucket-name
   s3-config-path      = ""
 
   ecs-container-definition = <<DEFINITION

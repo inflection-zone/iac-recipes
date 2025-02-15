@@ -1,9 +1,9 @@
-module "s3-bucket" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/s3-bucket"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/s3-bucket"
+module "s3" {
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/s3"
+  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/s3"
 
-  s3-bucket-properties = local.s3-bucket-properties
-  s3-bucket-policy     = local.s3-bucket-policy
+  s3-properties    = local.s3-properties
+  s3-bucket-policy = local.s3-bucket-policy
 }
 
 module "acm-route53" {
@@ -23,7 +23,7 @@ module "cloudfront" {
   acm-certificate-arn            = local.acm-certificate-arn
 
   depends_on = [
-    module.s3-bucket,
+    module.s3,
     module.acm-route53
   ]
 }

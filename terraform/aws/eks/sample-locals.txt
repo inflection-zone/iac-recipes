@@ -12,7 +12,7 @@ locals {
     ]
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
-      "public"  = 2,
+      "public"  = 1,
       "private" = 2
     }
     vpc-public-subnet-cidr-blocks = [
@@ -33,6 +33,8 @@ locals {
     vpc-public-subnet-tags-Name  = "eks-dev-vpc-public-subnet"
     vpc-private-subnet-tags-Name = "eks-dev-vpc-private-subnet"
     vpc-igw-tags-Name            = "eks-dev-igw"
+    vpc-public-rtb-tags-Name     = "eks-dev-vpc-public-rtb"
+    vpc-private-rtb-tags-Name    = "eks-dev-vpc-private-rtb"
   }
 
   vpc-id              = module.vpc.vpc-id
@@ -50,34 +52,40 @@ locals {
 
   # rds properties
   rds-properties = {
-    rds-owners    = ["137112412989"]
-    rds-ami-value = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
-
     rds-db-subnet-group-name        = "eks-dev-rds-db-subnet-group"
     rds-db-subnet-group-description = "eks dev rds db subnet group"
 
     rds-security-group-name      = "eks-dev-rds-security-group"
     rds-security-group-tags-Name = "eks-dev-rds-security-group"
 
-    rds-db-instance-identifier          = "eks-dev-rds-db-instance"
-    rds-db-instance-allocated-storage   = 20
-    rds-db-instance-engine              = "mysql"
-    rds-db-instance-engine-version      = "8.0.35"
-    rds-db-instance-class               = "db.t3.micro"
-    rds-db-instance-name                = "eks-dev-rds-db-instance"
-    rds-db-instance-username            = ""
-    rds-db-instance-password            = ""
-    rds-db-instance-skip-final-snapshot = true
-    rds-db-instance-publicly-accessible = false
+    rds-db-instance-count      = 1
+    rds-db-instance-identifier = ["eks-dev-rds-db-instance"]
+
+    rds-db-instance-class               = ["db.t3.micro"]
+    rds-db-instance-engine              = ["mysql"]  # mysql, postgres
+    rds-db-instance-engine-version      = ["8.0.35"] # 8.0.35, 17.2
+    rds-db-instance-allocated-storage   = [20]
+    rds-db-instance-storage-type        = ["gp2"]
+    rds-db-instance-publicly-accessible = [false]
+    rds-db-instance-skip-final-snapshot = [true]
+
+    rds-db-instance-db-name  = ["db"]
+    rds-db-instance-username = [""]
+    rds-db-instance-password = [""]
   }
 
-  # bastion host properties
+  # bastion-host-properties
   bastion-host-properties = {
+    bastion-host-count = 1
+
+    bastion-host-ami-owners = ["137112412989"]
+    bastion-host-ami-value  = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
+
     bastion-host-security-group-name      = "eks-dev-bastion-host-security-group"
     bastion-host-security-group-tags-Name = "eks-dev-bastion-host-security-group"
 
-    bastion-host-key-pair-name = "eks-dev-bastion-host-key-pair"
-    bastion-host-public-key    = "~/.ssh/bastion-key.pub"
+    bastion-host-key-pair-name = "eks-dev-bastion-host-ssh-key-pair"
+    bastion-host-public-key    = "~/.ssh/eks-dev-bastion-host-ssh-key-pair.pub"
 
     bastion-host-instance-type = "t2.micro"
     bastion-host-tags-Name     = "eks-dev-bastion-host"

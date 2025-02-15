@@ -33,6 +33,8 @@ locals {
     vpc-public-subnet-tags-Name  = "ec2-website-dev-vpc-public-subnet"
     vpc-private-subnet-tags-Name = "ec2-website-dev-vpc-private-subnet"
     vpc-igw-tags-Name            = "ec2-website-dev-igw"
+    vpc-public-rtb-tags-Name     = "ec2-website-vpc-public-rtb"
+    vpc-private-rtb-tags-Name    = "ec2-website-vpc-private-rtb"
   }
 
   vpc-id             = module.vpc.vpc-id

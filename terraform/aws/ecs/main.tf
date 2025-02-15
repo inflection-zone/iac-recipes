@@ -12,6 +12,14 @@ module "ecr-repository" {
   ecr-properties = local.ecr-properties
 }
 
+module "s3" {
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/s3"
+  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/s3"
+
+  s3-properties    = local.s3-properties
+  s3-bucket-policy = local.s3-bucket-policy
+}
+
 module "rds" {
   source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/rds"
   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/rds"
@@ -25,21 +33,6 @@ module "rds" {
   depends_on = [
     module.vpc
   ]
-}
-
-module "s3-bucket" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/s3-bucket"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/s3-bucket"
-
-  s3-bucket-properties = local.s3-bucket-properties
-  s3-bucket-policy     = local.s3-bucket-policy
-}
-
-resource "aws_s3_object" "env-file" {
-  bucket = local.s3-bucket-id
-  key    = local.s3-object-key
-  source = local.s3-object-source-path
-  etag   = filemd5(local.s3-object-source-path)
 }
 
 module "acm-route53" {
@@ -84,7 +77,7 @@ module "ecs" {
   vpc-public-subnets = local.vpc-public-subnets
 
   depends_on = [
-    module.s3-bucket,
+    module.s3,
     module.rds
   ]
 }
