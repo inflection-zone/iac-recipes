@@ -58,6 +58,17 @@ locals {
     rds-security-group-name      = "eks-dev-rds-security-group"
     rds-security-group-tags-Name = "eks-dev-rds-security-group"
 
+    rds-security-group-ingress-from-port   = 3306 # 5432
+    rds-security-group-ingress-to-port     = 3306 # 5432
+    rds-security-group-ingress-protocol    = "tcp"
+    rds-security-group-ingress-cidr-blocks = ["0.0.0.0/0"]
+    # rds-security-group-ingress-security-groups = []
+
+    rds-security-group-egress-from-port   = 0
+    rds-security-group-egress-to-port     = 0
+    rds-security-group-egress-protocol    = -1
+    rds-security-group-egress-cidr-blocks = ["0.0.0.0/0"]
+
     rds-db-instance-count      = 1
     rds-db-instance-identifier = ["eks-dev-rds-db-instance"]
 
