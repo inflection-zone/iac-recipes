@@ -21,11 +21,6 @@ module "cloudfront" {
   cloudfront-properties          = local.cloudfront-properties
   s3-bucket-regional-domain-name = local.s3-bucket-regional-domain-name
   acm-certificate-arn            = local.acm-certificate-arn
-
-  depends_on = [
-    module.s3,
-    module.acm-route53
-  ]
 }
 
 module "route53-record" {
@@ -33,8 +28,4 @@ module "route53-record" {
   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/route53-record"
 
   route53-record-properties = local.route53-record-properties
-
-  depends_on = [
-    module.cloudfront
-  ]
 }

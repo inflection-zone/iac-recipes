@@ -12,10 +12,6 @@ module "ec2" {
   ec2-properties     = local.ec2-properties
   vpc-id             = local.vpc-id
   vpc-public-subnets = local.vpc-public-subnets
-
-  depends_on = [
-    module.vpc
-  ]
 }
 
 module "eip" {
@@ -23,10 +19,6 @@ module "eip" {
   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/eip"
 
   eip-properties = local.eip-properties
-
-  depends_on = [
-    module.ec2
-  ]
 }
 
 module "acm-route53" {
@@ -45,20 +37,11 @@ module "load-balancer" {
   vpc-id                   = local.vpc-id
   vpc-public-subnets       = local.vpc-public-subnets
   acm-certificate-arn      = local.acm-certificate-arn
-
-  depends_on = [
-    module.vpc
-  ]
 }
 
 resource "aws_alb_target_group_attachment" "tg-attachment" {
   target_group_arn = local.lb-target-group-arn
   target_id        = local.ec2-instance-id
-
-  depends_on = [
-    module.ec2,
-    module.load-balancer
-  ]
 }
 
 module "route53-record" {
@@ -66,9 +49,4 @@ module "route53-record" {
   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/route53-record"
 
   route53-record-properties = local.route53-record-properties
-
-  depends_on = [
-    module.ec2,
-    module.load-balancer
-  ]
 }

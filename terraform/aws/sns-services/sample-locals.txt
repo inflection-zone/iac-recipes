@@ -1,0 +1,34 @@
+locals {
+  aws-region                   = "ap-south-1"
+  aws-default-tags-Environment = "dev"
+  aws-default-tags-ManagedBy   = "terraform"
+
+  # sns properties
+  sns-properties = {
+    sns-iam-role-name = "sns-iam-role"
+
+    sns-cloudwatch-iam-policy-name        = "sns-cloudwatch-policy"
+    sns-cloudwatch-iam-policy-description = "Policy to access CloudWatch Logs"
+
+    sns-topic-name = "sms-email-sns-topic"
+    sns-topic-fifo = false
+
+    sns-topic-subscription-count    = 2
+    sns-topic-subscription-protocol = ["sms", "email"]
+    sns-topic-subscription-endpoint = ["+911234567890", "receiver@gmail.com"]
+
+    sns-sms-cloudwatch-logging-default-sms-type                      = "Transactional" # Promotional
+    sns-sms-cloudwatch-logging-monthly-spend-limit                   = 1
+    sns-sms-cloudwatch-logging-delivery-status-success-sampling-rate = 100
+  }
+
+  sns-topic-arn = module.sns.sns-topic-arn
+
+  null-resource-properties = {
+    null-resource-count = 0
+
+    null-resource-local-exec-command = [
+      "aws sns publish --topic-arn ${local.sns-topic-arn} --message 'Hello, this is a test sms, email from SNS!'"
+    ]
+  }
+}

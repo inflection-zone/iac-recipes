@@ -80,15 +80,19 @@ locals {
     ca-log-analytics-workspace-name              = "container-apps-dev-log-analytics-workspace"
     ca-log-analytics-workspace-sku               = "PerGB2018"
     ca-log-analytics-workspace-retention-in-days = 30
-    ca-environment-name                          = "container-apps-dev-environment"
+
+    ca-environment-name                  = "container-apps-dev-environment"
+    ca-environment-workload-profile-name = "standard-workload"
+    ca-environment-workload-profile-type = "Consumption" # Consumption, D4, D8, D16, D32, E4, E8, E16, E32
   }
 
   container-app-environment-id = module.container-apps-setup.container-app-environment-id
 
   # container app properties
   container-app-properties = {
-    ca-name          = "container-apps-dev-container"
-    ca-revision-mode = "Single"
+    ca-name                  = "container-apps-dev-container"
+    ca-revision-mode         = "Single"
+    ca-workload-profile-name = "standard-workload"
 
     ca-template-container-name   = "nginx-container"
     ca-template-container-image  = "${local.acr-login-server}/nginx:latest"

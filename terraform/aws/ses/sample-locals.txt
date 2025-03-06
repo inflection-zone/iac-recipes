@@ -1,0 +1,42 @@
+locals {
+  aws-region                   = "ap-south-1"
+  aws-default-tags-Environment = "dev"
+  aws-default-tags-ManagedBy   = "terraform"
+
+  ses-properties = {
+    ses-iam-role-name = "ses-iam-role"
+
+    ses-cloudwatch-iam-policy-name        = "ses-cloudwatch-policy"
+    ses-cloudwatch-iam-policy-description = "Policy to access CloudWatch Log Groups"
+
+    ses-configuration-set-count = 1
+    ses-configuration-set-name  = "ses-configuration-set"
+
+    ses-event-destination-name                                  = "cloudwatch-ses-event-destination"
+    ses-event-destination-enabled                               = true
+    ses-event-destination-matching-types                        = ["send", "delivery", "bounce", "complaint", "reject"]
+    ses-event-destination-cloudwatch-destination-default-value  = "default"
+    ses-event-destination-cloudwatch-destination-dimension-name = "dimension"
+    ses-event-destination-cloudwatch-destination-value-source   = "emailHeader"
+
+    ses-email-identity-count = 2
+    ses-emails               = ["", ""]
+
+    ses-template-count         = 1
+    ses-template-name          = ["WelcomeEmailTemplate"]
+    ses-template-subject       = ["Welcome to Our Service, {{name}}!"] # Dynamic placeholder
+    ses-template-html-filename = ["./configs/email-template.html"]
+    ses-template-text-filename = ["./configs/email-template.txt"]
+
+    ses-domain-identity-count  = 0
+    ses-domain-identity-domain = ""
+  }
+
+  null-resource-properties = {
+    null-resource-count = 0
+
+    null-resource-local-exec-command = [
+      aws ses send-templated-email --source 'sender@gmail.com' --destination '{\"ToAddresses\":[\"receiver@gmail.com\"]}' --template 'WelcomeEmailTemplate' --template-data '{\"company_name\": \"Inflection Zone\", \"company_logo\": \"https://drive.google.com/uc?export=view&id=15pFZUql_kACTtPpOworWqvT6L9mLMG1x\", \"name\": \"Sahil\", \"action_url\": \"https://example.com/welcome\", \"company_domain\": \"inflectionzone.com\", \"year\": \"2025\" }'
+    ]
+  }
+}

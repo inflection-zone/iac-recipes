@@ -12,7 +12,7 @@ locals {
     ]
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
-      "public"  = 1,
+      "public"  = 2, # Two subnets necessary for load balancer, eks
       "private" = 0
     }
     vpc-public-subnet-cidr-blocks = [
@@ -42,32 +42,23 @@ locals {
 
   # ec2 properties
   ec2-properties = {
-    ec2-owners    = ["137112412989"]
-    ec2-ami-value = ["al2023-ami-2023.6.20241212.0-kernel-6.1-x86_64"]
+    ec2-ami-owners = "137112412989"
+    ec2-ami-value  = "al2023-ami-2023.6.20241212.0-kernel-6.1-x86_64"
 
     ec2-security-group-name      = "ec2-website-dev-security-group"
     ec2-security-group-tags-Name = "ec2-website-dev-security-group"
 
-    ec2-security-group-ingress-ssh-cidr-blocks = "0.0.0.0/0"
-    ec2-security-group-ingress-ssh-from-port   = 22
-    ec2-security-group-ingress-ssh-protocol    = "tcp"
-    ec2-security-group-ingress-ssh-to-port     = 22
+    ec2-vpc-security-group-ingress-rule-count  = 3
+    ec2-vpc-security-group-ingress-from-port   = [22, 80, 443]
+    ec2-vpc-security-group-ingress-to-port     = [22, 80, 443]
+    ec2-vpc-security-group-ingress-protocol    = ["tcp", "tcp", "tcp"]
+    ec2-vpc-security-group-ingress-cidr-blocks = ["0.0.0.0/0", "0.0.0.0/0", "0.0.0.0/0"]
 
-    ec2-security-group-ingress-http-cidr-blocks = "0.0.0.0/0"
-    ec2-security-group-ingress-http-from-port   = 80
-    ec2-security-group-ingress-http-protocol    = "tcp"
-    ec2-security-group-ingress-http-to-port     = 80
+    ec2-ipv4-vpc-security-group-egress-cidr-blocks = "0.0.0.0/0"
+    ec2-ipv4-vpc-security-group-egress-protocol    = "-1"
 
-    ec2-security-group-ingress-https-cidr-blocks = "0.0.0.0/0"
-    ec2-security-group-ingress-https-from-port   = 443
-    ec2-security-group-ingress-https-protocol    = "tcp"
-    ec2-security-group-ingress-https-to-port     = 443
-
-    ec2-security-group-egress-ipv4-cidr-blocks = "0.0.0.0/0"
-    ec2-security-group-egress-ipv4-protocol    = "-1"
-
-    ec2-security-group-egress-ipv6-cidr-blocks = "::/0"
-    ec2-security-group-egress-ipv6-protocol    = "-1"
+    ec2-ipv6-vpc-security-group-egress-cidr-blocks = "::/0"
+    ec2-ipv6-vpc-security-group-egress-protocol    = "-1"
 
     ec2-key-pair-name = "ec2-website-dev-instance-key"
     ec2-public-key    = "~/desktop/aws/ssh-keys/ec2-website-dev-instance-key.pub"
@@ -115,10 +106,10 @@ locals {
     lb-security-group-name      = "ec2-website-dev-lb-security-group"
     lb-security-group-tags-Name = "ec2-website-dev-lb-security-group"
 
-    lb-vpc-security-group-ingress-https-cidr-blocks = "0.0.0.0/0"
-    lb-vpc-security-group-ingress-https-from-port   = 443
+    lb-vpc-security-group-ingress-https-from-port   = 443 # 80, 443
+    lb-vpc-security-group-ingress-https-to-port     = 443 # 80, 443
     lb-vpc-security-group-ingress-https-protocol    = "tcp"
-    lb-vpc-security-group-ingress-https-to-port     = 443
+    lb-vpc-security-group-ingress-https-cidr-blocks = "0.0.0.0/0"
 
     lb-vpc-security-group-egress-ipv4-cidr-blocks = "0.0.0.0/0"
     lb-vpc-security-group-egress-ipv4-protocol    = "-1"
@@ -138,8 +129,10 @@ locals {
     lb-http-listener-port     = 80
     lb-http-listener-protocol = "HTTP"
 
-    lb-https-listener-port     = 443
-    lb-https-listener-protocol = "HTTPS"
+    lb-https-listener-count           = 1
+    lb-https-listener-port            = 443
+    lb-https-listener-protocol        = "HTTPS"
+    lb-https-listener-certificate-arn = local.acm-certificate-arn
   }
 
   lb-target-group-arn = module.load-balancer.lb-target-group-arn

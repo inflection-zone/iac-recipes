@@ -1,0 +1,79 @@
+locals {
+  aws-region                   = "ap-south-1"
+  aws-default-tags-Environment = "dev"
+  aws-default-tags-ManagedBy   = "terraform"
+
+  # cloudwatch properties
+  cloudwatch-properties = {
+    cloudwatch-log-group-count = 1
+
+    cloudwatch-log-group-name              = ["/aws/lambda/${local.lambda-properties.lambda-function-name[0]}"]
+    cloudwatch-log-group-retention-in-days = [14]
+  }
+
+  # lambda properties
+  lambda-properties = {
+    lambda-iam-role-name = "rds-scheduler-lambda-iam-role"
+
+    lambda-cloudwatch-iam-policy-name        = "rds-scheduler-lambda-cloudwatch-policy"
+    lambda-cloudwatch-iam-policy-description = "Policy to access CloudWatch Log Groups"
+
+    lambda-aws-service-iam-policy-count       = 1
+    lambda-aws-service-iam-policy-name        = ["rds-scheduler-lambda-rds-policy"]
+    lambda-aws-service-iam-policy-description = ["Policy for rds instance scaling"]
+    lambda-aws-service-iam-policy-documents = [
+      {
+        effect = "Allow",
+        actions = [
+          "rds:StartDBInstance",
+          "rds:StopDBInstance"
+        ]
+        resources = [
+          # "*",
+          "arn:aws:rds:ap-south-1:058264193698:db:database-1"
+        ]
+      }
+    ]
+
+    lambda-function-count    = 1
+    lambda-function-name     = ["rds-scheduler-lambda-function"]
+    lambda-function-filename = ["./lambda-functions/rds-scheduler.zip"]
+    lambda-function-handler  = ["rds-scheduler.lambda_handler"]
+    lambda-function-runtime  = ["python3.8"]
+    lambda-function-timeout  = [30]
+
+    lambda-function-environment-variables = [
+      {}
+    ]
+  }
+
+  lambda-function-arn = module.lambda.lambda-function-arn
+
+  eventbridge-properties = {
+    eventbridge-iam-role-name   = "rds-scheduler-eventbridge-iam-role"
+    eventbridge-iam-policy-name = "rds-scheduler-eventbridge-iam-policy"
+
+    eventbridge-aws-service-iam-policy-name        = "eventbridge-lambda-policy"
+    eventbridge-aws-service-iam-policy-description = "Policy for invoking lambda function"
+    eventbridge-aws-service-iam-policy-documents = {
+      effect = "Allow",
+      actions = [
+        "lambda:InvokeFunction"
+      ],
+      resources = ["*"]
+    }
+
+    scheduler-schedule-count               = 2
+    scheduler-schedule-name                = ["rds-scheduler-morning-eventbridge-schedule", "rds-scheduler-night-eventbridge-schedule"]
+    scheduler-schedule-expression-timezone = ["Asia/Kolkata", "Asia/Kolkata"]
+    scheduler-schedule-expression          = ["cron(0 8 ? * * *)", "cron(0 23 ? * * *)"] # Compulsory in above timezone format
+    scheduler-scheduler-target-arn         = local.lambda-function-arn[0]
+    scheduler-schedule-action              = ["start", "stop"]
+
+    cloudwatch-event-rule-count      = 0
+    cloudwatch-event-rule-name       = ["start-rds-morning", "stop-rds-nightly"]
+    cloudwatch-event-rule-cron       = ["cron(30 2 ? * * *)", "cron(30 17 ? * * *)"] # Compulsory in UTC Format
+    cloudwatch-event-rule-target-arn = local.lambda-function-arn[0]
+    cloudwatch-event-target-action   = ["start", "stop"]
+  }
+}

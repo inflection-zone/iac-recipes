@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to {{company_name}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+        }
+        .logo {
+            max-width: 100px;
+        }
+        .content {
+            text-align: center;
+            padding: 20px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Company Logo -->
+        <div class="header">
+            <img src="{{company_logo}}" alt="{{company_name}} Logo" class="logo">
+        </div>
+        
+        <!-- Email Content -->
+        <div class="content">
+            <h2>Welcome to {{company_name}}, {{name}}!</h2>
+            <p>We’re excited to have you on board. At {{company_name}}, we strive to provide the best services to our customers.</p>
+            <p>Click the button below to get started:</p>
+            <a href="{{action_url}}" class="btn">Get Started</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Need help? Contact us at <a href="mailto:support@{{company_domain}}">support@{{company_domain}}</a></p>
+            <p>&copy; {{year}} {{company_name}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

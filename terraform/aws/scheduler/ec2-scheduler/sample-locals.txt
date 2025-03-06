@@ -15,26 +15,8 @@ locals {
   lambda-properties = {
     lambda-iam-role-name = "ec2-scheduler-lambda-iam-role"
 
-    # lambda-execution-iam-policy-name        = "lambda-execution-sns-policy"
-    # lambda-execution-iam-policy-description = "Policy for EventBridge Lambda Function execution"
-    # lambda-execution-iam-policy-documents = {
-    #   effect = "Allow",
-    #   actions = [
-    #     "lambda:InvokeFunction"
-    #   ],
-    #   resources = [
-    #     "*"
-    #   ]
-    #   principal = [
-    #     "events.amazonaws.com"
-    #   ]
-    # }
-
     lambda-cloudwatch-iam-policy-name        = "ec2-scheduler-lambda-cloudwatch-policy"
-    lambda-cloudwatch-iam-policy-description = "Policy to access CloudWatch Logs"
-
-    lambda-aws-service-iam-policy-name        = "ec2-scheduler-lambda-ec2-policy"
-    lambda-aws-service-iam-policy-description = "Policy for AWS Service"
+    lambda-cloudwatch-iam-policy-description = "Policy to access CloudWatch Log Groups"
 
     lambda-aws-service-iam-policy-count       = 1
     lambda-aws-service-iam-policy-name        = ["ec2-scheduler-lambda-ec2-policy"]
@@ -91,5 +73,14 @@ locals {
     cloudwatch-event-rule-cron       = ["cron(30 2 ? * * *)", "cron(30 17 ? * * *)"] # Compulsory in UTC Format
     cloudwatch-event-rule-target-arn = local.lambda-function-arn[0]
     cloudwatch-event-target-action   = ["start", "stop"]
+  }
+
+  lambda-permission = {
+    lambda-permission-count         = 0 # keep it same as cloudwatch-event-rule-count
+    lambda-permission-function-name = local.lambda-properties.lambda-function-name[0]
+    lambda-permission-statement-id  = "AllowExecutionFromEventBridge"
+    lambda-permission-action        = "lambda:InvokeFunction"
+    lambda-permission-principal     = "events.amazonaws.com"
+    lambda-permission-source-arn    = [local.cloudwatch-event-rule-arn[0]]
   }
 }

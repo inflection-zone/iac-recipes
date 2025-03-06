@@ -22,10 +22,6 @@ module "rds" {
   vpc-id              = local.vpc-id
   vpc-public-subnets  = local.vpc-public-subnets
   vpc-private-subnets = local.vpc-private-subnets
-
-  depends_on = [
-    module.vpc
-  ]
 }
 
 module "eks" {
@@ -34,9 +30,4 @@ module "eks" {
 
   eks-properties     = local.eks-properties
   vpc-public-subnets = local.vpc-public-subnets
-
-  depends_on = [
-    module.ecr-repository,
-    module.rds
-  ]
 }

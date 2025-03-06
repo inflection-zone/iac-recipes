@@ -1,0 +1,96 @@
+locals {
+  # duplocloud provider properties
+  duplocloud-provider-properties = {
+    duplocloud-host      = "https://api.duplocloud.net"
+    duplocloud-tenant-id = "duplocloud-tenant-id"
+    duplocloud-token     = "duplocloud-api-token"
+  }
+
+  # duplocloud infrastructure properties
+  duplocloud-infrastructure-properties = {
+    infra_name        = "prod"
+    cloud             = 0 # AWS Cloud
+    region            = "us-west-2"
+    enable-k8-cluster = false
+    address-prefix    = "10.11.0.0/16"
+  }
+
+  # duplocloud tenant properties
+  duplocloud-tenant-properties = {
+    tenant-account-name = "myapp"
+    tenant-plan-id      = "default"
+  }
+
+  duplocloud-tenant-id = module.duplocloud-tenant.duplocloud-tenant-id
+
+  # duplocloud ecs properties
+  duplocloud-ecs-properties = {
+    ecs-family                   = "duploservices-ecs-service"
+    ecs-network-mode             = "awsvpc"
+    ecs-requires-compatibilities = ["FARGATE"]
+
+    ecs-runtime-platform-cpu-architecture        = "X86_64"
+    ecs-runtime-platform-operating-system-family = "Linux"
+
+    ecs-cpu    = "256"
+    ecs-memory = "1024"
+
+    ecs-prevent-tf-destroy = "false"
+
+    ecs-container-definitions = [
+      {
+        Name  = "default"
+        Image = "nginx:latest"
+        Environment = [
+          {
+            Name  = "NGINX_HOST",
+            Value = "foo"
+          }
+        ]
+        PortMappings = [
+          {
+            ContainerPort = "80",
+            HostPort      = "80",
+            Protocol = {
+              Value = "tcp"
+            }
+          }
+        ]
+      }
+    ]
+
+    ecs-service-replicas = 2
+
+    ecs-service-load-balancer-lb-type             = 1
+    ecs-service-load-balancer-port                = "8080"
+    ecs-service-load-balancer-external-port       = 80
+    ecs-service-load-balancer-protocol            = "HTTP"
+    ecs-service-load-balancer-enable-access-logs  = false
+    ecs-service-load-balancer-drop-invalid-header = true
+    ecs-service-load-balancer-health-check-url    = "https://example.healthcheckurl.com/healthcheck"
+  }
+
+  # duplocloud lambda function properties
+  duplocloud-lambda-function-properties = {
+    lambda-function-name        = "lambda-function"
+    lambda-function-description = "A description of my function"
+
+    lambda-function-runtime   = "java11"
+    lambda-function-handler   = "com.example.MyFunction::handleRequest"
+    lambda-function-s3-bucket = "s3-bucket"
+    lambda-function-s3-key    = "lambda-function.zip"
+
+    lambda-function-environment-variables = {
+      "foo" = "bar"
+    }
+
+    lambda-package-type                   = "Image"
+    lambda-image-uri                      = "dkr.ecr.us-west-2.amazonaws.com/myimage:latest"
+    lambda-image-config-command           = ["echo", "hello world"]
+    lambda-image-config-entry-point       = ["echo hello workd"]
+    lambda-image-config-working-directory = "/tmp3"
+
+    lambda-function-timeout     = 60
+    lambda-function-memory-size = 512
+  }
+}

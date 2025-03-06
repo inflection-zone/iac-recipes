@@ -3,7 +3,7 @@ locals {
   aws-default-tags-Environment = "remote-backend-dev"
   aws-default-tags-ManagedBy   = "terraform"
 
-  backend-access-iam-arns = ["arn:aws:iam::123456789123:user/username"]
+  # backend-access-iam-arns = ["arn:aws:iam::123456789123:user/username"]
 
   # s3 properties
   # s3-bucket-arn = module.s3.s3-bucket-arn
@@ -39,7 +39,7 @@ locals {
         "Effect" : "Allow",
         "Principal" : {
           "AWS" : [
-            local.backend-access-iam-arns[0]
+            # local.backend-access-iam-arns[0]
           ]
         },
         "Action" : [
@@ -63,7 +63,7 @@ locals {
         "Condition" : {
           "StringNotEquals" : {
             "aws:PrincipalArn" : [
-              local.backend-access-iam-arns[0]
+              # local.backend-access-iam-arns[0]
             ]
           }
         }
@@ -97,7 +97,7 @@ locals {
         "Effect" : "Allow",
         "Principal" : {
           "AWS" : [
-            local.backend-access-iam-arns[0]
+            # local.backend-access-iam-arns[0]
           ]
         },
         "Action" : [
@@ -117,7 +117,7 @@ locals {
         "Condition" : {
           "StringNotEquals" : {
             "aws:PrincipalArn" : [
-              local.backend-access-iam-arns[0]
+              # local.backend-access-iam-arns[0]
             ]
           }
         }

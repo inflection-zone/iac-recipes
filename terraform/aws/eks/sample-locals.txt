@@ -12,8 +12,8 @@ locals {
     ]
     vpc-cidr-block = "10.0.0.0/16"
     vpc-subnet-count = {
-      "public"  = 1,
-      "private" = 2
+      "public"  = 2, # Two subnets necessary for load balancer, eks
+      "private" = 2  # Two subnets necessary for rds
     }
     vpc-public-subnet-cidr-blocks = [
       "10.0.1.0/24",
@@ -43,11 +43,13 @@ locals {
 
   # ecr properties
   ecr-properties = {
-    ecr-repository-name         = "eksdevecr"
-    ecr-repository-force-delete = true
+    ecr-repository-count        = 1
+    ecr-repository-name         = ["eksdevecr"]
+    ecr-repository-force-delete = [true]
 
-    ecr-public-repository-name          = "eksdevecr"
-    ecr-public-repository-force-destroy = true
+    ecr-public-repository-count         = 0
+    ecr-public-repository-name          = ["eksdevecr"]
+    ecr-public-repository-force-destroy = [true]
   }
 
   # rds properties
@@ -62,7 +64,6 @@ locals {
     rds-security-group-ingress-to-port     = 3306 # 5432
     rds-security-group-ingress-protocol    = "tcp"
     rds-security-group-ingress-cidr-blocks = ["0.0.0.0/0"]
-    # rds-security-group-ingress-security-groups = []
 
     rds-security-group-egress-from-port   = 0
     rds-security-group-egress-to-port     = 0
@@ -89,8 +90,8 @@ locals {
   bastion-host-properties = {
     bastion-host-count = 1
 
-    bastion-host-ami-owners = ["137112412989"]
-    bastion-host-ami-value  = ["al2023-ami-2023.6.20241121.0-kernel-6.1-x86_64"]
+    bastion-host-ami-owners = "137112412989"
+    bastion-host-ami-value  = "al2023-ami-2023.6.20241212.0-kernel-6.1-x86_64"
 
     bastion-host-security-group-name      = "eks-dev-bastion-host-security-group"
     bastion-host-security-group-tags-Name = "eks-dev-bastion-host-security-group"
@@ -104,12 +105,17 @@ locals {
 
   # eks properties
   eks-properties = {
-    eks-cluster-role-name = "eks-dev-cluster-role"
-    eks-cluster-name      = "eks-dev-cluster"
-    eks-node-role-name    = "eks-dev-node-group-role"
-    eks-node-group-name   = "eks-dev-node-group"
-    eks-instance-types = [
-      "t2.medium"
-    ]
+    eks-cluster-iam-role-name = "eks-dev-cluster-role"
+    eks-cluster-name          = "eks-dev-cluster"
+
+    eks-node-group-iam-role-name = "eks-dev-node-group-role"
+
+    eks-node-group-count                         = 1
+    eks-node-group-name                          = ["eks-dev-node-group"]
+    eks-node-group-instance-types                = ["t2.medium"]
+    eks-node-group-scaling-config-desired-size   = 1
+    eks-node-group-scaling-config-max-size       = 1
+    eks-node-group-scaling-config-min-size       = 1
+    eks-node-group-update-config-max-unavailable = 1
   }
 }

@@ -31,7 +31,7 @@ locals {
     # }
 
     lambda-cloudwatch-iam-policy-name        = "sns-scheduler-lambda-cloudwatch-policy"
-    lambda-cloudwatch-iam-policy-description = "Policy to access CloudWatch Logs"
+    lambda-cloudwatch-iam-policy-description = "Policy to access CloudWatch Log Groups"
 
     lambda-aws-service-iam-policy-count       = 0
     lambda-aws-service-iam-policy-name        = ["sns-scheduler-lambda-ec2-policy"]
@@ -76,7 +76,7 @@ locals {
   sns-topic-arn = module.sns.sns-topic-arn
 
   lambda-permission = {
-    lambda-permission-count         = 2
+    lambda-permission-count         = 2 # keep it same as lambda-function-count
     lambda-permission-function-name = local.lambda-properties.lambda-function-name
     lambda-permission-statement-id  = "AllowExecutionFromSNS"
     lambda-permission-action        = "lambda:InvokeFunction"

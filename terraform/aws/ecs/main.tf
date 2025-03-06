@@ -29,19 +29,22 @@ module "rds" {
   vpc-id                  = local.vpc-id
   vpc-public-subnets      = local.vpc-public-subnets
   vpc-private-subnets     = local.vpc-private-subnets
-
-  depends_on = [
-    module.vpc
-  ]
 }
 
-module "acm-route53" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/acm-route53"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/acm-route53"
+module "cloudwatch" {
+  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/cloudwatch"
+  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/cloudwatch"
 
-  acm-properties          = local.acm-properties
-  route53-zone-properties = local.route53-zone-properties
+  cloudwatch-properties = local.cloudwatch-properties
 }
+
+# module "acm-route53" {
+#   source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/acm-route53"
+#   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/acm-route53"
+
+#   acm-properties          = local.acm-properties
+#   route53-zone-properties = local.route53-zone-properties
+# }
 
 module "load-balancer" {
   source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/load-balancer"
@@ -53,31 +56,22 @@ module "load-balancer" {
   acm-certificate-arn      = local.acm-certificate-arn
 }
 
-module "route53-record" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/route53-record"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/route53-record"
+# module "route53-record" {
+#   source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/route53-record"
+#   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/route53-record"
 
-  route53-record-properties = local.route53-record-properties
-
-  depends_on = [
-    module.load-balancer
-  ]
-}
+#   route53-record-properties = local.route53-record-properties
+# }
 
 module "ecs" {
   source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/ecs"
   # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/ecs"
 
-  ecs-properties           = local.ecs-properties
-  ecs-container-definition = local.ecs-container-definition
-  lb-target-group-arn      = local.lb-target-group-arn
-  lb-security-group-id     = local.lb-security-group-id
+  ecs-properties            = local.ecs-properties
+  ecs-container-definitions = local.ecs-container-definitions
+  lb-target-group-arn       = local.lb-target-group-arn
+  lb-security-group-id      = local.lb-security-group-id
 
   vpc-id             = local.vpc-id
   vpc-public-subnets = local.vpc-public-subnets
-
-  depends_on = [
-    module.s3,
-    module.rds
-  ]
 }
