@@ -4,7 +4,7 @@ from duplocloud.client import DuploClient
 
 secrets_client = boto3.client('secretsmanager')
 
-duplo_host = "https://reanfoundation.duplocloud.net"
+duplo_host = "https://inflectionzone.duplocloud.net"
 
 def get_secret(secret_name):
     try:
