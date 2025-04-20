@@ -3,6 +3,7 @@ locals {
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
 
+  # ses properties
   ses-properties = {
     ses-iam-role-name = "ses-iam-role"
 
@@ -32,6 +33,7 @@ locals {
     ses-domain-identity-domain = ""
   }
 
+  # null resource properties
   null-resource-properties = {
     null-resource-count = 0
 
