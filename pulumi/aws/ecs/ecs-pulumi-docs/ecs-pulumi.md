@@ -28,7 +28,7 @@ First, we will initiate and edit Pulumi configuration files for AWS resources us
 6. This will generate some Pulumi files in this directory.
 7. Now we will install predefined Pulumi modules.
 8. Activate the **`venv`** by running **`venv\Scripts\activate`**.
-9. Run **`pip install git+https://github.com/sahilphule/pulumi.git`** to install the modules.
+9. Run **`pip install git+https://github.com/inflection-sahil/pulumi.git`** to install the modules.
 10. Deactivate the **`venv`** by running **`deactivate`**.
 11. Now open the directory in the preferred IDE.
 12. Create *commons* folder
@@ -91,29 +91,29 @@ Now we will provision the infrastructure by applying the above-created configura
 ---
 
 ### VPC Image
-![vpc image](./images/vpc.png)
+![vpc image](./ecs-images/vpc.png)
 
 ---
 
 ### S3 Image
-![s3 image](./images/s3.png)
+![s3 image](./ecs-images/s3.png)
 
 ---
 <div style="page-break-after: always;"></div>
 
 ### RDS Image
-![rds image](./images/rds.png)
+![rds image](./ecs-images/rds.png)
 
 ---
 
 ### LB Image
-![lb image](./images/lb.png)
+![lb image](./ecs-images/lb.png)
 
 ---
 <div style="page-break-after: always;"></div>
 
 ### ECS Image
-![ecs image](./images/ecs.png)
+![ecs image](./ecs-images/ecs.png)
 
 ---
 ## Connection to the RDS database through Bastion Host using MySQL Workbench
@@ -140,12 +140,12 @@ Now, we will use MySQL Workbench to connect and access the MySQL RDS Database th
 ---
 
 ### Connection Page
-![connection image](./images/workbench.png)
+![connection image](./ecs-images/workbench.png)
 
 ---
 
 ### Commands Page
-![commands page image](./images/commands.png)
+![commands page image](./ecs-images/commands.png)
 
 ---
 <div style="page-break-after: always;"></div>
