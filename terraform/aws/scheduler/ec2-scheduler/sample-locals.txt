@@ -48,7 +48,7 @@ locals {
     lambda-function-name     = ["ec2-scheduler-lambda-function"]
     lambda-function-filename = ["./lambda-functions/ec2-scheduler.zip"]
     lambda-function-handler  = ["ec2-scheduler.lambda_handler"]
-    lambda-function-runtime  = ["python3.8"]
+    lambda-function-runtime  = ["python3.13"]
     lambda-function-timeout  = [30]
 
     lambda-function-environment-variables = [
@@ -85,6 +85,8 @@ locals {
     cloudwatch-event-rule-target-arn = local.lambda-function-arn[0]
     cloudwatch-event-target-action   = ["start", "stop"]
   }
+
+  cloudwatch-event-rule-arn = module.eventbridge.cloudwatch-event-rule-arns
 
   lambda-permission = {
     lambda-permission-count         = 0 # keep it same as cloudwatch-event-rule-count

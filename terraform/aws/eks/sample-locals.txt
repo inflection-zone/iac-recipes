@@ -6,15 +6,14 @@ locals {
   # vpc properties
   vpc-properties = {
     availability-zones = [
-      "${local.aws-region}a",
-      "${local.aws-region}b",
-      "${local.aws-region}c"
+      "ap-south-1a",
+      "ap-south-1b",
+      "ap-south-1c"
     ]
+
     vpc-cidr-block = "10.0.0.0/16"
-    vpc-subnet-count = {
-      "public"  = 2, # Two subnets necessary for load balancer, eks
-      "private" = 2  # Two subnets necessary for rds
-    }
+
+    vpc-public-subnet-count = 2 # Two subnets necessary for load balancer, eks
     vpc-public-subnet-cidr-blocks = [
       "10.0.1.0/24",
       "10.0.2.0/24",
@@ -22,6 +21,8 @@ locals {
       "10.0.4.0/24"
     ]
     vpc-public-subnet-map-public-ip-on-launch = true
+
+    vpc-private-subnet-count = 2 # Two subnets necessary for rds
     vpc-private-subnet-cidr-blocks = [
       "10.0.101.0/24",
       "10.0.102.0/24",
@@ -91,13 +92,13 @@ locals {
     bastion-host-count = 1
 
     bastion-host-ami-owners = "137112412989"
-    bastion-host-ami-value  = "al2023-ami-2023.6.20241212.0-kernel-6.1-x86_64"
+    bastion-host-ami-value  = "al2023-ami-2023.7.20250609.0-kernel-6.1-x86_64"
 
     bastion-host-security-group-name      = "eks-dev-bastion-host-security-group"
     bastion-host-security-group-tags-Name = "eks-dev-bastion-host-security-group"
 
     bastion-host-key-pair-name = "eks-dev-bastion-host-ssh-key-pair"
-    bastion-host-public-key    = "~/.ssh/eks-dev-bastion-host-ssh-key-pair.pub"
+    bastion-host-public-key    = "~/desktop/aws/ssh-keys/eks-dev-bastion-host-ssh-key-pair.pub"
 
     bastion-host-instance-type = "t2.micro"
     bastion-host-tags-Name     = "eks-dev-bastion-host"

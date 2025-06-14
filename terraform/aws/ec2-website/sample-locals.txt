@@ -6,15 +6,13 @@ locals {
   # vpc properties
   vpc-properties = {
     availability-zones = [
-      "${local.aws-region}a",
-      "${local.aws-region}b",
-      "${local.aws-region}c"
+      "ap-south-1a",
+      "ap-south-1b",
+      "ap-south-1c"
     ]
     vpc-cidr-block = "10.0.0.0/16"
-    vpc-subnet-count = {
-      "public"  = 2, # Two subnets necessary for load balancer, eks
-      "private" = 0
-    }
+
+    vpc-public-subnet-count = 2 # Two subnets necessary for load balancer, eks
     vpc-public-subnet-cidr-blocks = [
       "10.0.1.0/24",
       "10.0.2.0/24",
@@ -22,6 +20,8 @@ locals {
       "10.0.4.0/24"
     ]
     vpc-public-subnet-map-public-ip-on-launch = true
+
+    vpc-private-subnet-count = 0 # Two subnets necessary for rds
     vpc-private-subnet-cidr-blocks = [
       "10.0.101.0/24",
       "10.0.102.0/24",
@@ -43,7 +43,7 @@ locals {
   # ec2 properties
   ec2-properties = {
     ec2-ami-owners = "137112412989"
-    ec2-ami-value  = "al2023-ami-2023.6.20241212.0-kernel-6.1-x86_64"
+    ec2-ami-value  = "al2023-ami-2023.7.20250609.0-kernel-6.1-x86_64"
 
     ec2-security-group-name      = "ec2-website-dev-security-group"
     ec2-security-group-tags-Name = "ec2-website-dev-security-group"
@@ -109,10 +109,10 @@ locals {
     lb-security-group-name      = "ec2-website-dev-lb-security-group"
     lb-security-group-tags-Name = "ec2-website-dev-lb-security-group"
 
-    lb-vpc-security-group-ingress-https-from-port   = 443 # 80, 443
-    lb-vpc-security-group-ingress-https-to-port     = 443 # 80, 443
-    lb-vpc-security-group-ingress-https-protocol    = "tcp"
     lb-vpc-security-group-ingress-https-cidr-blocks = "0.0.0.0/0"
+    lb-vpc-security-group-ingress-https-from-port   = 443 # 80, 443
+    lb-vpc-security-group-ingress-https-protocol    = "tcp"
+    lb-vpc-security-group-ingress-https-to-port     = 443 # 80, 443
 
     lb-vpc-security-group-egress-ipv4-cidr-blocks = "0.0.0.0/0"
     lb-vpc-security-group-egress-ipv4-protocol    = "-1"
