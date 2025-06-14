@@ -10,6 +10,8 @@ module "lambda" {
   # source = "../../../../../../../../../templates/devops-templates/terraform/modules/aws/lambda"
 
   lambda-properties = local.lambda-properties
+  vpc-id            = local.vpc-id
+  vpc-subnet-id     = local.vpc-subnet-id
 }
 
 module "sns" {
