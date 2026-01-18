@@ -1,27 +1,47 @@
 locals {
   # subscription id
   subscription-id = ""
+  environment = "dev"
 
   # resource group properties
   resource-group-properties = {
-    rg-location = "Central India"
-    rg-name     = "aks-dev-resource-group"
+    location = "Central India"
+    name     = "aks-${local.environment}-resource-group"
   }
 
   # virtual network properties
   virtual-network-properties = {
-    vnet-name = "aks-dev-vnet"
+    vnet-name = "aks-${local.environment}-vnet"
     vnet-address-space = [
       "10.1.0.0/16"
     ]
-    vnet-public-subnet-name = "aks-dev-vnet-public-subnet"
-    vnet-public-subnet-address-prefixes = [
-      "10.1.1.0/24"
-    ]
+
+    vnet-subnet-properties = {
+      subnet-1 = {
+        name = "aks-${local.environment}-vnet-public-subnet"
+        address-prefixes = [
+          "10.1.1.0/24"
+        ]        
+
+        network-security = {
+          group-name = "vm-${local.environment}-vnet-subnet-nsg"
+
+          rule-name                       = "AllowInternetIn"
+          rule-priority                   = 100
+          rule-direction                  = "Inbound"
+          rule-access                     = "Allow"
+          rule-protocol                   = "*"
+          rule-source-port-range          = "*"
+          rule-destination-port-range     = "*"
+          rule-source-address-prefix      = "*"
+          rule-destination-address-prefix = "*"
+        }
+      }
+    }
   }
   vnet-id               = module.virtual-network.vnet-id
   vnet-name             = module.virtual-network.vnet-name
-  vnet-public-subnet-id = module.virtual-network.vnet-public-subnet-id
+  vnet-subnet-ids = module.virtual-network.vnet-subnet-ids
 
   # acr properties
   acr-properties = {
@@ -33,12 +53,12 @@ locals {
 
   # mysql flexible properties
   mysql-flexible-properties = {
-    vnet-mysql-flexible-subnet-name = "aks-dev-vnet-mysql-flexible-subnet"
+    vnet-mysql-flexible-subnet-name = "aks-${local.environment}-vnet-mysql-flexible-subnet"
     vnet-mysql-flexible-subnet-address-prefixes = [
       "10.1.101.0/24"
     ]
 
-    mysql-flexible-server-name            = "aks-dev-mysql-flexible-server"
+    mysql-flexible-server-name            = "aks-${local.environment}-mysql-flexible-server"
     mysql-flexible-administrator-login    = ""
     mysql-flexible-administrator-password = ""
     mysql-flexible-version                = "8.0.21"
@@ -50,9 +70,9 @@ locals {
 
   # aks properties
   aks-properties = {
-    aks-cluster-name                     = "aks-dev-cluster"
+    aks-cluster-name                     = "aks-${local.environment}-cluster"
     aks-kubernetes-version               = "1.30.1"
-    aks-dns-prefix                       = "aks-dev-cluster"
+    aks-dns-prefix                       = "aks-${local.environment}-cluster"
     aks-sku-tier                         = "Free"
     aks-private-cluster-enabled          = false
     aks-http-application-routing-enabled = true

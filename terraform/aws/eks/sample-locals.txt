@@ -3,6 +3,8 @@ locals {
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
 
+  environment = "dev"
+
   # vpc properties
   vpc-properties = {
     availability-zones = [
@@ -30,12 +32,12 @@ locals {
       "10.0.104.0/24"
     ]
 
-    vpc-tags-Name                = "eks-dev-vpc"
-    vpc-public-subnet-tags-Name  = "eks-dev-vpc-public-subnet"
-    vpc-private-subnet-tags-Name = "eks-dev-vpc-private-subnet"
-    vpc-igw-tags-Name            = "eks-dev-igw"
-    vpc-public-rtb-tags-Name     = "eks-dev-vpc-public-rtb"
-    vpc-private-rtb-tags-Name    = "eks-dev-vpc-private-rtb"
+    vpc-tags-Name                = "eks-${local.environment}-vpc"
+    vpc-public-subnet-tags-Name  = "eks-${local.environment}-vpc-public-subnet"
+    vpc-private-subnet-tags-Name = "eks-${local.environment}-vpc-private-subnet"
+    vpc-igw-tags-Name            = "eks-${local.environment}-igw"
+    vpc-public-rtb-tags-Name     = "eks-${local.environment}-vpc-public-rtb"
+    vpc-private-rtb-tags-Name    = "eks-${local.environment}-vpc-private-rtb"
   }
 
   vpc-id              = module.vpc.vpc-id
@@ -55,11 +57,11 @@ locals {
 
   # rds properties
   rds-properties = {
-    rds-db-subnet-group-name        = "eks-dev-rds-db-subnet-group"
-    rds-db-subnet-group-description = "eks dev rds db subnet group"
+    rds-db-subnet-group-name        = "eks-${local.environment}-rds-db-subnet-group"
+    rds-db-subnet-group-description = "eks ${local.environment} rds db subnet group"
 
-    rds-security-group-name      = "eks-dev-rds-security-group"
-    rds-security-group-tags-Name = "eks-dev-rds-security-group"
+    rds-security-group-name      = "eks-${local.environment}-rds-security-group"
+    rds-security-group-tags-Name = "eks-${local.environment}-rds-security-group"
 
     rds-security-group-ingress-from-port   = 3306 # 5432
     rds-security-group-ingress-to-port     = 3306 # 5432
@@ -72,7 +74,7 @@ locals {
     rds-security-group-egress-cidr-blocks = ["0.0.0.0/0"]
 
     rds-db-instance-count      = 1
-    rds-db-instance-identifier = ["eks-dev-rds-db-instance"]
+    rds-db-instance-identifier = ["eks-${local.environment}-rds-db-instance"]
 
     rds-db-instance-class               = ["db.t3.micro"]
     rds-db-instance-engine              = ["mysql"]  # mysql, postgres
@@ -94,25 +96,25 @@ locals {
     bastion-host-ami-owners = "137112412989"
     bastion-host-ami-value  = "al2023-ami-2023.7.20250609.0-kernel-6.1-x86_64"
 
-    bastion-host-security-group-name      = "eks-dev-bastion-host-security-group"
-    bastion-host-security-group-tags-Name = "eks-dev-bastion-host-security-group"
+    bastion-host-security-group-name      = "eks-${local.environment}-bastion-host-security-group"
+    bastion-host-security-group-tags-Name = "eks-${local.environment}-bastion-host-security-group"
 
-    bastion-host-key-pair-name = "eks-dev-bastion-host-ssh-key-pair"
-    bastion-host-public-key    = "~/desktop/aws/ssh-keys/eks-dev-bastion-host-ssh-key-pair.pub"
+    bastion-host-key-pair-name = "eks-${local.environment}-bastion-host-ssh-key-pair"
+    bastion-host-public-key    = ""
 
     bastion-host-instance-type = "t2.micro"
-    bastion-host-tags-Name     = "eks-dev-bastion-host"
+    bastion-host-tags-Name     = "eks-${local.environment}-bastion-host"
   }
 
   # eks properties
   eks-properties = {
-    eks-cluster-iam-role-name = "eks-dev-cluster-role"
-    eks-cluster-name          = "eks-dev-cluster"
+    eks-cluster-iam-role-name = "eks-${local.environment}-cluster-role"
+    eks-cluster-name          = "eks-${local.environment}-cluster"
 
-    eks-node-group-iam-role-name = "eks-dev-node-group-role"
+    eks-node-group-iam-role-name = "eks-${local.environment}-node-group-role"
 
     eks-node-group-count                         = 1
-    eks-node-group-name                          = ["eks-dev-node-group"]
+    eks-node-group-name                          = ["eks-${local.environment}-node-group"]
     eks-node-group-instance-types                = ["t2.medium"]
     eks-node-group-scaling-config-desired-size   = 1
     eks-node-group-scaling-config-max-size       = 1

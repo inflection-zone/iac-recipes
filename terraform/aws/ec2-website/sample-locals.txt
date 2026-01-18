@@ -3,6 +3,8 @@ locals {
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
 
+  environment = "dev"
+
   # vpc properties
   vpc-properties = {
     availability-zones = [
@@ -29,12 +31,12 @@ locals {
       "10.0.104.0/24"
     ]
 
-    vpc-tags-Name                = "ec2-website-dev-vpc"
-    vpc-public-subnet-tags-Name  = "ec2-website-dev-vpc-public-subnet"
-    vpc-private-subnet-tags-Name = "ec2-website-dev-vpc-private-subnet"
-    vpc-igw-tags-Name            = "ec2-website-dev-igw"
-    vpc-public-rtb-tags-Name     = "ec2-website-vpc-public-rtb"
-    vpc-private-rtb-tags-Name    = "ec2-website-vpc-private-rtb"
+    vpc-tags-Name                = "ec2-website-${local.environment}-vpc"
+    vpc-public-subnet-tags-Name  = "ec2-website-${local.environment}-vpc-public-subnet"
+    vpc-private-subnet-tags-Name = "ec2-website-${local.environment}-vpc-private-subnet"
+    vpc-igw-tags-Name            = "ec2-website-${local.environment}-igw"
+    vpc-public-rtb-tags-Name     = "ec2-website-${local.environment}-vpc-public-rtb"
+    vpc-private-rtb-tags-Name    = "ec2-website-${local.environment}-vpc-private-rtb"
   }
 
   vpc-id             = module.vpc.vpc-id
@@ -45,8 +47,8 @@ locals {
     ec2-ami-owners = "137112412989"
     ec2-ami-value  = "al2023-ami-2023.7.20250609.0-kernel-6.1-x86_64"
 
-    ec2-security-group-name      = "ec2-website-dev-security-group"
-    ec2-security-group-tags-Name = "ec2-website-dev-security-group"
+    ec2-security-group-name      = "ec2-website-${local.environment}-security-group"
+    ec2-security-group-tags-Name = "ec2-website-${local.environment}-security-group"
 
     ec2-vpc-security-group-ingress-rule-count  = 3
     ec2-vpc-security-group-ingress-from-port   = [22, 80, 443]
@@ -61,15 +63,15 @@ locals {
     ec2-ipv6-vpc-security-group-egress-protocol    = "-1"
 
     ec2-key-pair-count = 1
-    ec2-key-pair-name  = "ec2-website-dev-instance-key"
-    ec2-public-key     = "~/desktop/aws/ssh-keys/ec2-website-dev-instance-key.pub"
+    ec2-key-pair-name  = "ec2-website-${local.environment}-instance-key"
+    ec2-public-key     = ""
 
     ec2-instance-type                          = "t2.micro"
     ec2-instance-user-data                     = "../startup-configs/linux.tpl"
     ec2-instance-associate-public-ip-address   = true
     ec2-instance-root-block-device-volume-size = 8
     ec2-instance-root-block-device-volume-type = "gp3"
-    ec2-instance-tags-Name                     = "ec2-website-dev-instance"
+    ec2-instance-tags-Name                     = "ec2-website-${local.environment}-instance"
   }
 
   ec2-instance-id = module.ec2.ec2-instance-id
@@ -79,7 +81,7 @@ locals {
     eip-instance-id = local.ec2-instance-id
     eip-domain      = "vpc"
 
-    eip-tags-Name = "ec2-website-dev-eip"
+    eip-tags-Name = "ec2-website-${local.environment}-eip"
   }
 
   eip = module.eip.eip
@@ -106,8 +108,8 @@ locals {
 
   # load balancer properties
   load-balancer-properties = {
-    lb-security-group-name      = "ec2-website-dev-lb-security-group"
-    lb-security-group-tags-Name = "ec2-website-dev-lb-security-group"
+    lb-security-group-name      = "ec2-website-${local.environment}-lb-security-group"
+    lb-security-group-tags-Name = "ec2-website-${local.environment}-lb-security-group"
 
     lb-vpc-security-group-ingress-https-cidr-blocks = "0.0.0.0/0"
     lb-vpc-security-group-ingress-https-from-port   = 443 # 80, 443
@@ -120,11 +122,11 @@ locals {
     lb-vpc-security-group-egress-ipv6-cidr-blocks = "::/0"
     lb-vpc-security-group-egress-ipv6-protocol    = "-1"
 
-    lb-name     = "ec2-website-dev-lb"
+    lb-name     = "ec2-website-${local.environment}-lb"
     lb-type     = "application"
     lb-internal = false
 
-    lb-target-group-name        = "ec2-website-dev-lb-target-group"
+    lb-target-group-name        = "ec2-website-${local.environment}-lb-target-group"
     lb-target-group-port        = 80
     lb-target-group-protocol    = "HTTP"
     lb-target-group-target-type = "instance"

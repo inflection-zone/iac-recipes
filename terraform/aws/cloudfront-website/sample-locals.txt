@@ -3,6 +3,8 @@ locals {
   aws-default-tags-Environment = "dev"
   aws-default-tags-ManagedBy   = "terraform"
 
+  environment = "dev"
+
   # s3 properties
   s3-bucket-arn = module.s3.s3-bucket-arn
 

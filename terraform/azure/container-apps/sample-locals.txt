@@ -1,27 +1,47 @@
 locals {
   # subscription id
   subscription-id = ""
+  environment = "dev"
 
   # resource group properties
   resource-group-properties = {
-    rg-location = "Central India"
-    rg-name     = "container-apps-dev-resource-group"
+    location = "Central India"
+    name     = "container-apps-${local.environment}-resource-group"
   }
 
   # virtual network properties
   virtual-network-properties = {
-    vnet-name = "container-apps-dev-vnet"
+    vnet-name = "container-apps-${local.environment}-vnet"
     vnet-address-space = [
       "10.1.0.0/16"
     ]
-    vnet-public-subnet-name = "container-apps-dev-vnet-public-subnet"
-    vnet-public-subnet-address-prefixes = [
-      "10.1.0.0/23"
-    ]
+
+    vnet-subnet-properties = {
+      subnet-1 = {
+        name = "container-apps-${local.environment}-vnet-public-subnet"
+        address-prefixes = [
+          "10.1.0.0/23"
+        ]
+
+        network-security = {
+          group-name = "vm-${local.environment}-vnet-subnet-nsg"
+
+          rule-name                       = "AllowInternetIn"
+          rule-priority                   = 100
+          rule-direction                  = "Inbound"
+          rule-access                     = "Allow"
+          rule-protocol                   = "*"
+          rule-source-port-range          = "*"
+          rule-destination-port-range     = "*"
+          rule-source-address-prefix      = "*"
+          rule-destination-address-prefix = "*"
+        }
+      }      
+    }
   }
   vnet-id               = module.virtual-network.vnet-id
   vnet-name             = module.virtual-network.vnet-name
-  vnet-public-subnet-id = module.virtual-network.vnet-public-subnet-id
+  vnet-subnet-id = module.virtual-network.vnet-subnet-ids
 
   # acr properties
   acr-properties = {
@@ -37,12 +57,12 @@ locals {
 
   # mysql flexible properties
   mysql-flexible-properties = {
-    vnet-mysql-flexible-subnet-name = "container-apps-dev-vnet-mysql-flexible-subnet"
+    vnet-mysql-flexible-subnet-name = "container-apps-${local.environment}-vnet-mysql-flexible-subnet"
     vnet-mysql-flexible-subnet-address-prefixes = [
       "10.1.101.0/24"
     ]
 
-    mysql-flexible-server-name            = "container-apps-dev-mysql-flexible-server"
+    mysql-flexible-server-name            = "container-apps-${local.environment}-mysql-flexible-server"
     mysql-flexible-administrator-login    = ""
     mysql-flexible-administrator-password = ""
     mysql-flexible-version                = "8.0.21"
@@ -77,12 +97,12 @@ locals {
 
   # container app setup properties
   container-app-setup-properties = {
-    ca-log-analytics-workspace-name              = "container-apps-dev-log-analytics-workspace"
+    ca-log-analytics-workspace-name              = "container-apps-${local.environment}-log-analytics-workspace"
     ca-log-analytics-workspace-sku               = "PerGB2018"
     ca-log-analytics-workspace-retention-in-days = 30
 
-    ca-environment-name                  = "container-apps-dev-environment"
-    ca-environment-workload-profile-name = "standard-workload"
+    ca-environment-name                  = "container-apps-${local.environment}-environment"
+    ca-environment-workload-profile-name = "Consumption" # Consumption type must have Consumption name
     ca-environment-workload-profile-type = "Consumption" # Consumption, D4, D8, D16, D32, E4, E8, E16, E32
   }
 
@@ -90,7 +110,7 @@ locals {
 
   # container app properties
   container-app-properties = {
-    ca-name                  = "container-apps-dev-container"
+    ca-name                  = "container-apps-${local.environment}-container"
     ca-revision-mode         = "Single"
     ca-workload-profile-name = "standard-workload"
 

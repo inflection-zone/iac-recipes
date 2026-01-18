@@ -49,7 +49,7 @@ module "aks" {
 
   resource-group-properties = local.resource-group-properties
   aks-properties            = local.aks-properties
-  vnet-public-subnet-id     = local.vnet-public-subnet-id
+  vnet-public-subnet-id     = local.vnet-subnet-ids[0]
 
   depends_on = [
     module.virtual-network

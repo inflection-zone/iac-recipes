@@ -1,66 +1,93 @@
 locals {
   # subscription id
-  subscription-id = ""
+  subscription-id = "9defec2b-12e5-4f3a-8c9f-8edcac493dc8"
+  environment = "dev"
 
   # resource group properties
   resource-group-properties = {
-    rg-location = "Central India"
-    rg-name     = "vm-dev-resource-group"
+    location = "Central India"
+    name     = "vm-${local.environment}-resource-group"
   }
 
   # virtual network properties
   virtual-network-properties = {
-    vnet-name = "vm-dev-vnet"
+    vnet-name = "vm-${local.environment}-vnet"
     vnet-address-space = [
       "10.0.0.0/16"
     ]
-    vnet-public-subnet-name = "vm-dev-vnet-public-subnet"
-    vnet-public-subnet-address-prefixes = [
-      "10.0.2.0/24"
-    ]
+
+    vnet-subnet-properties = {
+      subnet-1 = {
+        name = "vm-${local.environment}-vnet-public-subnet"
+        address-prefixes = [
+          "10.0.2.0/24"
+        ]
+
+        network-security = {
+          group-name = "vm-${local.environment}-vnet-subnet-nsg"
+
+          rule-name                       = "AllowInternetIn"
+          rule-priority                   = 100
+          rule-direction                  = "Inbound"
+          rule-access                     = "Allow"
+          rule-protocol                   = "*"
+          rule-source-port-range          = "*"
+          rule-destination-port-range     = "*"
+          rule-source-address-prefix      = "*"
+          rule-destination-address-prefix = "*"
+        }
+      }
+    }
   }
 
-  vnet-public-subnet-id = module.virtual-network.vnet-public-subnet-id
+  vnet-subnet-id = module.virtual-network.vnet-subnet-ids[0]
 
   # virtual-machine-properties
   virtual-machine-properties = {
-    public-ip-name              = "vm-dev-public-ip"
+    public-ip-name              = "vm-${local.environment}-public-ip"
     public-ip-allocation-method = "Static"
 
-    network-interface-name                          = "vm-dev-nic"
-    network-interface-ip-configuration-name         = "vm-dev-ip-configuration"
-    network-interface-private-ip-address-allocation = "Dynamic"
+    network-interface = {
+      name                          = "vm-${local.environment}-nic"
+      ip-configuration-name         = "vm-${local.environment}-ip-configuration"
+      private-ip-address-allocation = "Dynamic"
+    }
+    
+    network-security = {
+      group-name = "vm-${local.environment}-network-security-group"
+      
+      rule-count                      = 3
+      rule-name                       = ["ssh-inbound", "http-inbound", "https-inbound"]
+      rule-priority                   = [100, 200, 300]
+      rule-direction                  = ["Inbound", "Inbound", "Inbound"]
+      rule-access                     = ["Allow", "Allow", "Allow"]
+      rule-protocol                   = ["Tcp", "Tcp", "Tcp"]
+      rule-source-port-range          = ["*", "*", "*"]
+      rule-destination-port-range     = ["22", "80", "443"]
+      rule-source-address-prefix      = ["*", "*", "*"]
+      rule-destination-address-prefix = ["*", "*", "*"]
+    }
 
-    network-security-group-name = "vm-dev-network-security-group"
+    linux-vm = {
+      name                            = "vm-${local.environment}-server"
+      size                            = "Standard_B1s"
+      admin-username                  = ""
+      # admin-password                  = ""
+      disable-password-authentication = false
+      custom-data                     = "../../../startup-configs/ubuntu/docker.tpl"
 
-    network-security-rule-count                      = 3
-    network-security-rule-name                       = ["ssh-inbound", "http-inbound", "https-inbound"]
-    network-security-rule-priority                   = [100, 200, 300]
-    network-security-rule-direction                  = ["Inbound", "Inbound", "Inbound"]
-    network-security-rule-access                     = ["Allow", "Allow", "Allow"]
-    network-security-rule-protocol                   = ["Tcp", "Tcp", "Tcp"]
-    network-security-rule-source-port-range          = ["*", "*", "*"]
-    network-security-rule-destination-port-range     = ["22", "80", "443"]
-    network-security-rule-source-address-prefix      = ["*", "*", "*"]
-    network-security-rule-destination-address-prefix = ["*", "*", "*"]
+      admin-ssh-key-username = "vm-${local.environment}-ssh-key"
+      admin-ssh-public-key = ""
 
-    linux-vm-name                            = "vm-dev-server"
-    linux-vm-size                            = "Standard_DS1_v2"
-    linux-vm-admin-username                  = ""
-    linux-vm-admin-password                  = ""
-    linux-vm-disable-password-authentication = false
-    linux-vm-custom-data                     = "../../../startup-configs/ubuntu/docker.tpl"
+      os-disk-name                 = "vm-${local.environment}-os-disk"
+      os-disk-caching              = "ReadWrite"
+      os-disk-storage-account-type = "Standard_LRS"
 
-    linux-vm-admin-ssh-key-username = "vm-dev-ssh-key"
-
-    linux-vm-os-disk-name                 = "vm-dev-os-disk"
-    linux-vm-os-disk-caching              = "ReadWrite"
-    linux-vm-os-disk-storage-account-type = "Standard_LRS"
-
-    vm-source-image-reference-publisher = "Canonical"
-    vm-source-image-reference-offer     = "0001-com-ubuntu-server-jammy"
-    vm-source-image-reference-sku       = "22_04-lts"
-    vm-source-image-reference-version   = "latest"
+      source-image-reference-publisher = "Canonical"
+      source-image-reference-offer     = "ubuntu-24_04-lts"
+      source-image-reference-sku       = "server"
+      source-image-reference-version   = "latest"
+    }
   }
 
   vm-public-ip = module.virtual-machine.vm-public-ip

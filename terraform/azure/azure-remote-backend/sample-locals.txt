@@ -1,11 +1,12 @@
 locals {
   # subscription id
   subscription-id = ""
+  environment = "dev"
 
   # resource group properties
   resource-group-properties = {
-    rg-location = "Central India"
-    rg-name     = "remote-backend-dev-resource-group"
+    location = "Central India"
+    name     = "remote-backend-${local.environment}-resource-group"
   }
 
   vnet-public-subnet-id = ""
