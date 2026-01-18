@@ -1,20 +1,20 @@
 module "vpc" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/vpc"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/vpc"
+  source = "github.com/inflection-templates/terraform-modules/aws/vpc"
+  # source = "../../../../../../../../templates/terraform-modules/aws/vpc"
 
   vpc-properties = local.vpc-properties
 }
 
 module "ecr-repository" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/ecr"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/ecr"
+  source = "github.com/inflection-templates/terraform-modules/aws/ecr"
+  # source = "../../../../../../../../templates/terraform-modules/aws/ecr"
 
   ecr-properties = local.ecr-properties
 }
 
 module "rds" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/rds"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/rds"
+  source = "github.com/inflection-templates/terraform-modules/aws/rds"
+  # source = "../../../../../../../../templates/terraform-modules/aws/rds"
 
   rds-properties          = local.rds-properties
   bastion-host-properties = local.bastion-host-properties
@@ -25,8 +25,8 @@ module "rds" {
 }
 
 module "eks" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/eks"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/aws/eks"
+  source = "github.com/inflection-templates/terraform-modules/aws/eks"
+  # source = "../../../../../../../../templates/terraform-modules/aws/eks"
 
   eks-properties     = local.eks-properties
   vpc-public-subnets = local.vpc-public-subnets

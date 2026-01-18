@@ -1,13 +1,13 @@
 module "resource-group" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/resource-group"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/resource-group"
+  source = "github.com/inflection-templates/terraform-modules/azure/resource-group"
+  # source = "../../../../../../../../templates/terraform-modules/azure/resource-group"
 
   resource-group-properties = local.resource-group-properties
 }
 
 module "virtual-network" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/virtual-network"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/virtual-network"
+  source = "github.com/inflection-templates/terraform-modules/azure/virtual-network"
+  # source = "../../../../../../../../templates/terraform-modules/azure/virtual-network"
 
   resource-group-properties  = local.resource-group-properties
   virtual-network-properties = local.virtual-network-properties
@@ -18,8 +18,8 @@ module "virtual-network" {
 }
 
 module "acr" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/acr"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/acr"
+  source = "github.com/inflection-templates/terraform-modules/azure/acr"
+  # source = "../../../../../../../../templates/terraform-modules/azure/acr"
 
   resource-group-properties = local.resource-group-properties
   acr-properties            = local.acr-properties
@@ -30,8 +30,8 @@ module "acr" {
 }
 
 module "mysql-flexible" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/mysql-flexible"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/mysql-flexible"
+  source = "github.com/inflection-templates/terraform-modules/azure/mysql-flexible"
+  # source = "../../../../../../../../templates/terraform-modules/azure/mysql-flexible"
 
   resource-group-properties = local.resource-group-properties
   mysql-flexible-properties = local.mysql-flexible-properties
@@ -44,8 +44,8 @@ module "mysql-flexible" {
 }
 
 module "storage" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/storage"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/storage"
+  source = "github.com/inflection-templates/terraform-modules/azure/storage"
+  # source = "../../../../../../../../templates/terraform-modules/azure/storage"
 
   resource-group-properties = local.resource-group-properties
   storage-properties        = local.storage-properties
@@ -57,8 +57,8 @@ module "storage" {
 }
 
 module "container-apps-setup" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/container-apps-setup"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/container-apps-setup"
+  source = "github.com/inflection-templates/terraform-modules/azure/container-apps-setup"
+  # source = "../../../../../../../../templates/terraform-modules/azure/container-apps-setup"
 
   resource-group-properties      = local.resource-group-properties
   container-app-setup-properties = local.container-app-setup-properties
@@ -70,8 +70,8 @@ module "container-apps-setup" {
 }
 
 module "container-apps" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/azure/container-apps"
-  # source = "../../../../../../../../templates/devops-templates/terraform/modules/azure/container-apps"
+  source = "github.com/inflection-templates/terraform-modules/azure/container-apps"
+  # source = "../../../../../../../../templates/terraform-modules/azure/container-apps"
 
   resource-group-properties    = local.resource-group-properties
   container-app-properties     = local.container-app-properties

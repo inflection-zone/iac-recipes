@@ -1,13 +1,13 @@
 module "cloudwatch" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/cloudwatch"
-  # source = "../../../../../../../../../templates/devops-templates/terraform/modules/aws/cloudwatch"
+  source = "github.com/inflection-templates/terraform-modules/aws/cloudwatch"
+  # source = "../../../../../../../../../templates/terraform-modules/aws/cloudwatch"
 
   cloudwatch-properties = local.cloudwatch-properties
 }
 
 module "lambda" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/lambda"
-  # source = "../../../../../../../../../templates/devops-templates/terraform/modules/aws/lambda"
+  source = "github.com/inflection-templates/terraform-modules/aws/lambda"
+  # source = "../../../../../../../../../templates/terraform-modules/aws/lambda"
 
   lambda-properties = local.lambda-properties
   vpc-id            = local.vpc-id
@@ -15,8 +15,8 @@ module "lambda" {
 }
 
 module "sns" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/sns"
-  # source = "../../../../../../../../../templates/devops-templates/terraform/modules/aws/sns"
+  source = "github.com/inflection-templates/terraform-modules/aws/sns"
+  # source = "../../../../../../../../../templates/terraform-modules/aws/sns"
 
   sns-properties = local.sns-properties
 }
@@ -33,8 +33,8 @@ resource "aws_lambda_permission" "lambda-permission" {
 }
 
 module "eventbridge" {
-  source = "github.com/inflection-templates/devops-templates/terraform/modules/aws/eventbridge"
-  # source = "../../../../../../../../../templates/devops-templates/terraform/modules/aws/eventbridge"
+  source = "github.com/inflection-templates/terraform-modules/aws/eventbridge"
+  # source = "../../../../../../../../../templates/terraform-modules/aws/eventbridge"
 
   eventbridge-properties = local.eventbridge-properties
 }
