@@ -62,7 +62,7 @@ module "container-apps-setup" {
 
   resource-group-properties      = local.resource-group-properties
   container-app-setup-properties = local.container-app-setup-properties
-  vnet-public-subnet-id          = local.vnet-subnet-ids[0]
+  vnet-infrastructure-subnet-id = local.vnet-subnet-id
 
   depends_on = [
     module.virtual-network
