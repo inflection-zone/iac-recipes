@@ -23,7 +23,7 @@ module "virtual-machine" {
 
   resource-group-properties  = local.resource-group-properties
   virtual-machine-properties = local.virtual-machine-properties
-  vnet-subnet-id      = local.vnet-subnet-id
+  vnet-subnet-id             = local.vnet-subnet-id
 
   depends_on = [
     module.virtual-network

@@ -1,7 +1,7 @@
 locals {
   # subscription id
   subscription-id = ""
-  environment = "dev"
+  environment     = "dev"
 
   # resource group properties
   resource-group-properties = {

@@ -1,7 +1,7 @@
 locals {
   # subscription id
-  subscription-id = "9defec2b-12e5-4f3a-8c9f-8edcac493dc8"
-  environment = "dev"
+  subscription-id = ""
+  environment     = "dev"
 
   # resource group properties
   resource-group-properties = {
@@ -52,10 +52,10 @@ locals {
       ip-configuration-name         = "vm-${local.environment}-ip-configuration"
       private-ip-address-allocation = "Dynamic"
     }
-    
+
     network-security = {
       group-name = "vm-${local.environment}-network-security-group"
-      
+
       rule-count                      = 3
       rule-name                       = ["ssh-inbound", "http-inbound", "https-inbound"]
       rule-priority                   = [100, 200, 300]
@@ -69,15 +69,15 @@ locals {
     }
 
     linux-vm = {
-      name                            = "vm-${local.environment}-server"
-      size                            = "Standard_B1s"
-      admin-username                  = ""
+      name           = "vm-${local.environment}-server"
+      size           = "Standard_B1s"
+      admin-username = ""
       # admin-password                  = ""
       disable-password-authentication = false
       custom-data                     = "../../../startup-configs/ubuntu/docker.tpl"
 
       admin-ssh-key-username = "vm-${local.environment}-ssh-key"
-      admin-ssh-public-key = ""
+      admin-ssh-public-key   = ""
 
       os-disk-name                 = "vm-${local.environment}-os-disk"
       os-disk-caching              = "ReadWrite"

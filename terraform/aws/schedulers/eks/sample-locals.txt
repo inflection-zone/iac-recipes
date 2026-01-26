@@ -1,0 +1,55 @@
+locals {
+  aws-region                   = "ap-south-1"
+  aws-default-tags-Environment = "dev"
+  aws-default-tags-ManagedBy   = "terraform"
+
+  vpc-id        = ""
+  vpc-subnet-id = ""
+
+  # cloudwatch properties
+  cloudwatch-properties = {
+    cloudwatch-log-group-count             = 1
+    cloudwatch-log-group-name              = ["/aws/lambda/${local.lambda-properties.lambda-function-name[0]}"]
+    cloudwatch-log-group-retention-in-days = [14]
+  }
+
+  # lambda properties
+  lambda-properties = {
+    lambda-iam-role-name = "eks-scheduler-lambda-iam-role"
+
+    lambda-cloudwatch-iam-policy-name        = "eks-scheduler-lambda-cloudwatch-policy"
+    lambda-cloudwatch-iam-policy-description = "Policy to access CloudWatch Logs"
+
+    lambda-aws-service-iam-policy-count       = 1
+    lambda-aws-service-iam-policy-name        = ["eks-scheduler-lambda-eks-policy"]
+    lambda-aws-service-iam-policy-description = ["Policy for EKS NodeGroup scaling"]
+    lambda-aws-service-iam-policy-documents = [
+      {
+        effect = "Allow",
+        actions = [
+          "eks:UpdateNodegroupConfig"
+        ],
+        resources = ["*"]
+      }
+    ]
+
+    lambda-vpc-config                            = 0
+    lambda-vpc-security-group-name               = "lambda-security-group"
+    lambda-vpc-security-group-description        = "lambda security group"
+    lambda-vpc-security-group-egress-from-port   = 0
+    lambda-vpc-security-group-egress-to-port     = 0
+    lambda-vpc-security-group-egress-protocol    = "-1"
+    lambda-vpc-security-group-egress-cidr-blocks = ["0.0.0.0/0"]
+
+    lambda-function-count    = 1
+    lambda-function-name     = ["eks-scheduler-lambda-function"]
+    lambda-function-filename = ["./lambda-functions/zips/eks-scheduler.zip"]
+    lambda-function-handler  = ["eks-scheduler.lambda_handler"]
+    lambda-function-runtime  = ["python3.13"]
+    lambda-function-timeout  = [30]
+
+    lambda-function-environment-variables = [
+      {}
+    ]
+  }
+}

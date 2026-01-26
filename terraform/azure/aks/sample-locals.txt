@@ -1,7 +1,7 @@
 locals {
   # subscription id
   subscription-id = ""
-  environment = "dev"
+  environment     = "dev"
 
   # resource group properties
   resource-group-properties = {
@@ -21,7 +21,7 @@ locals {
         name = "aks-${local.environment}-vnet-public-subnet"
         address-prefixes = [
           "10.1.1.0/24"
-        ]        
+        ]
 
         network-security = {
           group-name = "vm-${local.environment}-vnet-subnet-nsg"
@@ -39,8 +39,8 @@ locals {
       }
     }
   }
-  vnet-id               = module.virtual-network.vnet-id
-  vnet-name             = module.virtual-network.vnet-name
+  vnet-id         = module.virtual-network.vnet-id
+  vnet-name       = module.virtual-network.vnet-name
   vnet-subnet-ids = module.virtual-network.vnet-subnet-ids
 
   # acr properties
@@ -71,7 +71,7 @@ locals {
   # aks properties
   aks-properties = {
     aks-cluster-name                     = "aks-${local.environment}-cluster"
-    aks-kubernetes-version               = "1.30.1"
+    aks-kubernetes-version               = "1.34.0"
     aks-dns-prefix                       = "aks-${local.environment}-cluster"
     aks-sku-tier                         = "Free"
     aks-private-cluster-enabled          = false
@@ -79,7 +79,7 @@ locals {
 
     aks-default-node-pool-name                        = "defnodepool"
     aks-default-node-pool-type                        = "VirtualMachineScaleSets"
-    aks-default-node-pool-vm-size                     = "Standard_DS2_v2"
+    aks-default-node-pool-vm-size                     = "Standard_D2as_v5"
     aks-default-node-pool-auto-scaling-enabled        = false
     aks-default-node-pool-min-count                   = null
     aks-default-node-pool-max-count                   = null
@@ -88,7 +88,7 @@ locals {
     aks-default-node-pool-temporary-name-for-rotation = "nodepoolrot"
 
     aks-cluster-node-pool-name                   = "nodepool"
-    aks-cluster-node-pool-vm-size                = "Standard_DS2_v2"
+    aks-cluster-node-pool-vm-size                = "Standard_D2as_v5"
     aks-cluster-node-pool-mode                   = "User"
     aks-cluster-node-pool-auto-scaling-enabled   = false
     aks-cluster-node-pool-min-count              = null

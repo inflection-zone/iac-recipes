@@ -1,7 +1,7 @@
 locals {
   # subscription id
   subscription-id = ""
-  environment = "dev"
+  environment     = "dev"
 
   # resource group properties
   resource-group-properties = {
@@ -18,13 +18,16 @@ locals {
 
     vnet-subnet-properties = {
       subnet-1 = {
-        name = "container-apps-${local.environment}-vnet-public-subnet"
-        address-prefixes = [
-          "10.1.0.0/23"
-        ]
-
+        name              = "container-apps-${local.environment}-vnet-subnet"
+        address-prefixes  = ["10.1.0.0/23"]
+        service-endpoints = ["Microsoft.Storage"]
+        delegation = {
+          name                       = "container-apps-${local.environment}-vnet-subnet-delegation"
+          service-delegation-name    = "Microsoft.App/environments"
+          service-delegation-actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", ]
+        }
         network-security = {
-          group-name = "vm-${local.environment}-vnet-subnet-nsg"
+          group-name = "container-apps-${local.environment}-vnet-subnet-nsg"
 
           rule-name                       = "AllowInternetIn"
           rule-priority                   = 100
@@ -36,12 +39,12 @@ locals {
           rule-source-address-prefix      = "*"
           rule-destination-address-prefix = "*"
         }
-      }      
+      }
     }
   }
-  vnet-id               = module.virtual-network.vnet-id
-  vnet-name             = module.virtual-network.vnet-name
-  vnet-subnet-id = module.virtual-network.vnet-subnet-ids
+  vnet-id        = module.virtual-network.vnet-id
+  vnet-name      = module.virtual-network.vnet-name
+  vnet-subnet-id = module.virtual-network.vnet-subnet-ids[0]
 
   # acr properties
   acr-properties = {
@@ -97,34 +100,45 @@ locals {
 
   # container app setup properties
   container-app-setup-properties = {
-    ca-log-analytics-workspace-name              = "container-apps-${local.environment}-log-analytics-workspace"
-    ca-log-analytics-workspace-sku               = "PerGB2018"
-    ca-log-analytics-workspace-retention-in-days = 30
+    ca-log-analytics-workspace = {
+      name              = "container-apps-${local.environment}-log-analytics-workspace"
+      sku               = "PerGB2018"
+      retention-in-days = 30
+    }
 
-    ca-environment-name                  = "container-apps-${local.environment}-environment"
-    ca-environment-workload-profile-name = "Consumption" # Consumption type must have Consumption name
-    ca-environment-workload-profile-type = "Consumption" # Consumption, D4, D8, D16, D32, E4, E8, E16, E32
+    ca-environment = {
+      name                               = "container-apps-${local.environment}-environment"
+      infrastructure-resource-group-name = "container-apps-${local.environment}-environment-infrastructure-resource-group"
+      workload-profile-name              = "Consumption" # Consumption type must have Consumption name
+      workload-profile-type              = "Consumption" # Consumption, D4, D8, D16, D32, E4, E8, E16, E32
+    }
   }
 
   container-app-environment-id = module.container-apps-setup.container-app-environment-id
 
   # container app properties
   container-app-properties = {
-    ca-name                  = "container-apps-${local.environment}-container"
-    ca-revision-mode         = "Single"
-    ca-workload-profile-name = "standard-workload"
+    name                  = "container-apps-${local.environment}-container-app"
+    revision-mode         = "Single"
+    workload-profile-name = "Consumption"
+    identity-type         = "SystemAssigned" # SystemAssigned, UserAssigned
+    identity-ids          = []
 
-    ca-template-container-name   = "nginx-container"
-    ca-template-container-image  = "${local.acr-login-server}/nginx:latest"
-    ca-template-container-cpu    = 0.25
-    ca-template-container-memory = "0.5Gi"
+    template-container-name   = "nginx-container"
+    template-container-image  = "${local.acr-login-server}/nginx:latest"
+    template-container-cpu    = 0.25
+    template-container-memory = "0.5Gi"
 
-    ca-template-min-replicas = 1
-    ca-template-max-replicas = 1
+    env = {
+      "CONTAINER_NAME" = ""
+    }
 
-    ca-ingress-allow-insecure-connections = false
-    ca-ingress-external-enabled           = true
-    ca-ingress-target-port                = 80
-    ca-ingress-transport                  = "auto"
+    template-min-replicas = 1
+    template-max-replicas = 1
+
+    ingress-allow-insecure-connections = false
+    ingress-external-enabled           = true
+    ingress-target-port                = 80
+    ingress-transport                  = "auto"
   }
 }
